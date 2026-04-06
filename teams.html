@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squadlink — Teams & Matchmaking</title>
+    <meta name="description" content="Build your dream esports squad. Find teammates, create teams, track performance, and dominate the leaderboards on Squadlink.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="SL.css">
+    <link rel="stylesheet" href="teams.css">
+</head>
+
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-trail trail-1"></div>
+    <div class="cursor-trail trail-2"></div>
+    <div class="cursor-trail trail-3"></div>
+
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator">
+        <svg width="60" height="60">
+            <circle class="progress-bg" cx="30" cy="30" r="27" />
+            <circle class="progress-ring" cx="30" cy="30" r="27" />
+            <defs>
+                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00FFFF" />
+                    <stop offset="100%" stop-color="#FF9900" />
+                </linearGradient>
+            </defs>
+        </svg>
+        <div class="center-circle">
+            <span class="scroll-percentage">0%</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="SL.html"><img src="squadlink_logo.png" alt="Squadlink" style="height: 120px; width: auto; object-fit: contain;"></a>
+            <nav class="nav-links">
+                <a href="SL.html" class="nav-link">Home</a>
+                <a href="tournaments.html" class="nav-link">Tournaments</a>
+                <a href="teams.html" class="nav-link active">Teams</a>
+                <a href="SL.html#about" class="nav-link">About</a>
+            </nav>
+            <button class="cta-btn join-btn" onclick="window.location.href='login.html'" id="nav-join-btn">Join Now</button>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Teams Hero Section -->
+    <section class="teams-hero">
+        <div class="teams-hero-bg">
+            <div class="th-grid"></div>
+            <div class="th-orb th-orb-1"></div>
+            <div class="th-orb th-orb-2"></div>
+        </div>
+        <div class="teams-hero-content">
+            <div class="teams-hero-badge">⚡ TEAM MANAGEMENT PLATFORM</div>
+            <h1 class="teams-hero-title">Build Your <span class="th-gradient">Squad</span></h1>
+            <p class="teams-hero-subtitle">Find teammates, forge teams, and dominate the competition. Your journey to the top starts with the right squad.</p>
+            <div class="teams-hero-stats">
+                <div class="th-stat">
+                    <span class="th-stat-num" data-val="1240">0</span>
+                    <span class="th-stat-label">Active Teams</span>
+                </div>
+                <div class="th-stat-divider"></div>
+                <div class="th-stat">
+                    <span class="th-stat-num" data-val="8500">0</span>
+                    <span class="th-stat-label">Players Online</span>
+                </div>
+                <div class="th-stat-divider"></div>
+                <div class="th-stat">
+                    <span class="th-stat-num" data-val="320">0</span>
+                    <span class="th-stat-label">Matches Today</span>
+                </div>
+            </div>
+            <div class="teams-hero-actions">
+                <button class="cta-btn primary-btn" id="hero-create-team-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    Create Team
+                </button>
+                <button class="cta-btn secondary-btn" id="hero-edit-profile-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    Edit Profile
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Teams Platform -->
+    <main class="teams-main">
+        <div class="teams-container">
+
+            <!-- Tab Bar -->
+            <div class="teams-tab-bar">
+                <button class="teams-tab active" data-tab="browse" id="tab-browse">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+                    Browse Teams
+                    <span class="tab-badge" id="tab-browse-badge">0</span>
+                </button>
+                <button class="teams-tab" data-tab="myteams" id="tab-myteams">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    My Teams
+                    <span class="tab-badge" id="tab-myteams-badge">0</span>
+                </button>
+                <button class="teams-tab" data-tab="find" id="tab-find">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    Find Teammates
+                </button>
+                <button class="teams-tab" data-tab="invites" id="tab-invites">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    Invites
+                    <span class="tab-badge tab-badge-alert" id="tab-invites-badge" style="display:none">0</span>
+                </button>
+            </div>
+
+            <!-- ===== TAB: BROWSE TEAMS ===== -->
+            <div class="tab-content active" id="tab-content-browse">
+                <div class="browse-controls">
+                    <div class="search-bar-wrap">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" id="browse-search" placeholder="Search teams by name, game, or region…">
+                    </div>
+                    <div class="browse-filters">
+                        <select id="filter-game" class="filter-select">
+                            <option value="">All Games</option>
+                            <option value="Valorant">Valorant</option>
+                            <option value="BGMI">BGMI</option>
+                            <option value="Free Fire">Free Fire</option>
+                            <option value="COD Mobile">COD Mobile</option>
+                            <option value="CS2">CS2</option>
+                        </select>
+                        <select id="filter-region" class="filter-select">
+                            <option value="">All Regions</option>
+                            <option value="Asia">Asia</option>
+                            <option value="India">India</option>
+                            <option value="SEA">SEA</option>
+                            <option value="EU">EU</option>
+                            <option value="NA">NA</option>
+                        </select>
+                        <select id="filter-rank" class="filter-select">
+                            <option value="">All Ranks</option>
+                            <option value="Any">Any Rank</option>
+                            <option value="Bronze+">Bronze+</option>
+                            <option value="Gold+">Gold+</option>
+                            <option value="Diamond+">Diamond+</option>
+                            <option value="Conqueror">Conqueror</option>
+                        </select>
+                        <button class="filter-btn" id="filter-open-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+                            Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Auto Fill Banner -->
+                <div class="autofill-banner" id="autofill-banner">
+                    <div class="autofill-banner-inner">
+                        <div class="autofill-icon">🤖</div>
+                        <div class="autofill-text">
+                            <strong>AUTO TEAM FILL</strong>
+                            <span>Smart AI is ready to match you with teams needing your role!</span>
+                        </div>
+                        <button class="cta-btn primary-btn autofill-btn" id="autofill-trigger-btn">Find My Match</button>
+                    </div>
+                </div>
+
+                <!-- Auto Fill Results Drawer -->
+                <div class="autofill-drawer hidden" id="autofill-drawer">
+                    <div class="autofill-drawer-header">
+                        <h3>🎯 Best Teams For You</h3>
+                        <button class="drawer-close" id="autofill-drawer-close">✕</button>
+                    </div>
+                    <div class="autofill-results" id="autofill-results"></div>
+                </div>
+
+                <div class="teams-grid" id="teams-grid">
+                    <!-- Team cards injected here by JS -->
+                </div>
+                <div class="empty-state hidden" id="browse-empty">
+                    <div class="empty-icon">🏴</div>
+                    <h3>No Teams Found</h3>
+                    <p>Try adjusting your filters or be the first to create one!</p>
+                    <button class="cta-btn primary-btn" id="browse-create-btn">Create First Team</button>
+                </div>
+            </div>
+
+            <!-- ===== TAB: MY TEAMS ===== -->
+            <div class="tab-content" id="tab-content-myteams">
+                <div class="myteams-header">
+                    <div>
+                        <h2 class="section-heading">Your Squads</h2>
+                        <p class="section-sub">Teams you lead or are a member of</p>
+                    </div>
+                    <button class="cta-btn primary-btn" id="myteams-create-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        Create New Team
+                    </button>
+                </div>
+                <div class="myteams-grid" id="myteams-grid">
+                    <!-- injected by JS -->
+                </div>
+                <div class="empty-state hidden" id="myteams-empty">
+                    <div class="empty-icon">⚔️</div>
+                    <h3>No Squads Yet</h3>
+                    <p>Create a team or join one to get started!</p>
+                    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                        <button class="cta-btn primary-btn" id="myteams-empty-create">Create Team</button>
+                        <button class="cta-btn secondary-btn" id="myteams-empty-browse">Browse Teams</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB: FIND TEAMMATES ===== -->
+            <div class="tab-content" id="tab-content-find">
+                <div class="find-layout">
+                    <!-- Left: My Profile Card -->
+                    <div class="find-sidebar">
+                        <div class="my-profile-card" id="my-profile-card">
+                            <div class="profile-card-header">
+                                <div class="profile-avatar" id="profile-avatar-display">?</div>
+                                <div>
+                                    <div class="profile-username" id="profile-username-display">Set Up Profile</div>
+                                    <div class="profile-game-tag" id="profile-game-tag-display">No game selected</div>
+                                </div>
+                            </div>
+                            <div class="profile-stats-row" id="profile-stats-row">
+                                <div class="profile-stat">
+                                    <span class="ps-val" id="ps-kd">—</span>
+                                    <span class="ps-label">K/D</span>
+                                </div>
+                                <div class="profile-stat">
+                                    <span class="ps-val" id="ps-wr">—</span>
+                                    <span class="ps-label">Win %</span>
+                                </div>
+                                <div class="profile-stat">
+                                    <span class="ps-val" id="ps-rank">—</span>
+                                    <span class="ps-label">Rank</span>
+                                </div>
+                            </div>
+                            <div class="profile-tags" id="profile-tags-display"></div>
+                            <button class="cta-btn secondary-btn full-width" id="find-edit-profile-btn">✏️ Edit Profile</button>
+                        </div>
+
+                        <div class="match-controls">
+                            <h3 class="match-controls-title">Match Filters</h3>
+                            <div class="match-filter-group">
+                                <label>Game</label>
+                                <select id="match-filter-game" class="filter-select">
+                                    <option value="">Any</option>
+                                    <option value="Valorant">Valorant</option>
+                                    <option value="BGMI">BGMI</option>
+                                    <option value="Free Fire">Free Fire</option>
+                                    <option value="COD Mobile">COD Mobile</option>
+                                    <option value="CS2">CS2</option>
+                                </select>
+                            </div>
+                            <div class="match-filter-group">
+                                <label>Region</label>
+                                <select id="match-filter-region" class="filter-select">
+                                    <option value="">Any</option>
+                                    <option value="Asia">Asia</option>
+                                    <option value="India">India</option>
+                                    <option value="SEA">SEA</option>
+                                    <option value="EU">EU</option>
+                                    <option value="NA">NA</option>
+                                </select>
+                            </div>
+                            <div class="match-filter-group">
+                                <label>Role Needed</label>
+                                <select id="match-filter-role" class="filter-select">
+                                    <option value="">Any Role</option>
+                                    <option value="IGL">IGL</option>
+                                    <option value="Entry">Entry</option>
+                                    <option value="Support">Support</option>
+                                    <option value="Sniper">Sniper</option>
+                                    <option value="Lurker">Lurker</option>
+                                    <option value="Flex">Flex</option>
+                                </select>
+                            </div>
+                            <button class="cta-btn primary-btn full-width" id="refresh-matches-btn">🔄 Refresh Matches</button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Suggested Teammates -->
+                    <div class="find-main">
+                        <div class="find-main-header">
+                            <h2 class="section-heading">Suggested Teammates</h2>
+                            <span class="match-count-label" id="match-count-label">— players found</span>
+                        </div>
+                        <div class="players-grid" id="players-grid">
+                            <!-- Player cards injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB: INVITES ===== -->
+            <div class="tab-content" id="tab-content-invites">
+                <div class="invites-layout">
+
+                    <div class="invites-section">
+                        <h2 class="section-heading">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            Team Invites
+                        </h2>
+                        <div id="invites-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="invites-section">
+                        <h2 class="section-heading">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            Join Requests Sent
+                        </h2>
+                        <div id="requests-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="invites-section" id="incoming-requests-section">
+                        <h2 class="section-heading">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                            Incoming Join Requests (Team Leaders)
+                        </h2>
+                        <div id="incoming-requests-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <a href="SL.html" class="footer-logo">
+                    <img src="squadlink_logo.png" alt="Squadlink" style="height: 60px; width: auto; object-fit: contain;">
+                </a>
+                <p class="copyright">© 2025 Squadlink. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================== MODALS ===================== -->
+
+    <!-- 1. TEAM PROFILE MODAL -->
+    <div class="modal-overlay" id="team-profile-modal">
+        <div class="modal-content team-profile-modal-content">
+            <button class="close-modal-btn" id="close-team-profile">✕</button>
+
+            <!-- Team Banner / Hero -->
+            <div class="tp-hero" id="tp-hero">
+                <div class="tp-hero-bg" id="tp-hero-bg"></div>
+                <div class="tp-hero-info">
+                    <div class="tp-logo" id="tp-logo">🎮</div>
+                    <div class="tp-meta">
+                        <h2 class="tp-name" id="tp-name">Team Name</h2>
+                        <div class="tp-game-region">
+                            <span class="tp-game" id="tp-game">—</span>
+                            <span class="tp-sep">·</span>
+                            <span class="tp-region" id="tp-region">—</span>
+                        </div>
+                        <div class="tp-privacy-rank">
+                            <span class="rank-badge" id="tp-rank-badge">—</span>
+                            <span class="privacy-badge" id="tp-privacy-badge">PUBLIC</span>
+                        </div>
+                    </div>
+                    <div class="tp-leader-actions" id="tp-leader-actions" style="display:none">
+                        <button class="cta-btn secondary-btn tp-manage-btn" id="tp-manage-btn">⚙️ Manage Team</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Stats Bar -->
+            <div class="tp-stats-bar">
+                <div class="tp-stat-item">
+                    <span class="tp-stat-val" id="tps-matches">0</span>
+                    <span class="tp-stat-label">Matches</span>
+                </div>
+                <div class="tp-stat-divider"></div>
+                <div class="tp-stat-item">
+                    <span class="tp-stat-val" id="tps-wins">0</span>
+                    <span class="tp-stat-label">Wins</span>
+                </div>
+                <div class="tp-stat-divider"></div>
+                <div class="tp-stat-item">
+                    <span class="tp-stat-val" id="tps-winrate">0%</span>
+                    <span class="tp-stat-label">Win Rate</span>
+                </div>
+                <div class="tp-stat-divider"></div>
+                <div class="tp-stat-item">
+                    <span class="tp-stat-val" id="tps-tournaments">0</span>
+                    <span class="tp-stat-label">Tournaments</span>
+                </div>
+            </div>
+
+            <!-- Tabs inside modal -->
+            <div class="tp-tabs">
+                <button class="tp-tab active" data-tptab="roster">Roster</button>
+                <button class="tp-tab" data-tptab="achievements">Achievements</button>
+                <button class="tp-tab" data-tptab="history">Match History</button>
+                <button class="tp-tab" data-tptab="manage" id="tp-manage-tab" style="display:none">Manage</button>
+            </div>
+
+            <!-- Roster Tab -->
+            <div class="tp-tab-content active" id="tptab-roster">
+                <div class="tp-description" id="tp-description">—</div>
+                <h4 class="tp-section-title">Roster</h4>
+                <div class="tp-roster" id="tp-roster"></div>
+                <div class="tp-required-roles" id="tp-required-roles-section">
+                    <h4 class="tp-section-title">Open Slots</h4>
+                    <div class="tp-roles-list" id="tp-roles-list"></div>
+                </div>
+            </div>
+
+            <!-- Achievements Tab -->
+            <div class="tp-tab-content" id="tptab-achievements">
+                <div class="achievements-grid" id="tp-achievements-grid"></div>
+                <div class="empty-state hidden" id="tp-achievements-empty">
+                    <div class="empty-icon">🏆</div>
+                    <h3>No Achievements Yet</h3>
+                    <p>Keep playing to earn badges!</p>
+                </div>
+            </div>
+
+            <!-- Match History Tab -->
+            <div class="tp-tab-content" id="tptab-history">
+                <div class="match-history-list" id="tp-match-history"></div>
+                <div class="empty-state hidden" id="tp-history-empty">
+                    <div class="empty-icon">🎮</div>
+                    <h3>No Matches Yet</h3>
+                    <p>Play your first match to see history here!</p>
+                </div>
+            </div>
+
+            <!-- Manage Tab (leader only) -->
+            <div class="tp-tab-content" id="tptab-manage">
+                <div class="manage-section">
+                    <h4 class="tp-section-title">Invite Players</h4>
+                    <div class="invite-search-bar">
+                        <input type="text" id="invite-search-input" placeholder="Search player by username…">
+                        <button class="cta-btn primary-btn" id="invite-search-btn">Search</button>
+                    </div>
+                    <div class="invite-search-results" id="invite-search-results"></div>
+                </div>
+                <div class="manage-section">
+                    <h4 class="tp-section-title">Team Settings</h4>
+                    <div class="manage-actions">
+                        <button class="cta-btn secondary-btn manage-action-btn" id="tp-sim-match-btn">⚔️ Simulate Match Win</button>
+                        <button class="cta-btn secondary-btn manage-action-btn" id="tp-sim-tournament-btn">🏆 Simulate Tournament</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Join/Leave Action -->
+            <div class="tp-footer-actions" id="tp-footer-actions">
+                <button class="cta-btn primary-btn full-width" id="tp-join-btn">⚔️ Request to Join</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. CREATE TEAM MODAL -->
+    <div class="modal-overlay" id="create-team-modal">
+        <div class="modal-content create-team-modal-content">
+            <button class="close-modal-btn" id="close-create-team">✕</button>
+            <h2 class="modal-title">Create <span class="accent-orange">Team</span></h2>
+            <p class="modal-desc">Forge your squad. Fill in the details below.</p>
+
+            <form id="create-team-form" class="cyber-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ct-name">Team Name *</label>
+                        <input type="text" id="ct-name" required placeholder="e.g. Neon Predators">
+                    </div>
+                    <div class="form-group">
+                        <label for="ct-game">Game *</label>
+                        <select id="ct-game" required class="cyber-select">
+                            <option value="">Select Game</option>
+                            <option value="Valorant">Valorant</option>
+                            <option value="BGMI">BGMI</option>
+                            <option value="Free Fire">Free Fire</option>
+                            <option value="COD Mobile">COD Mobile</option>
+                            <option value="CS2">CS2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group logo-upload-group">
+                    <label>Team Logo</label>
+                    <div class="logo-upload-area" id="logo-upload-area">
+                        <div class="logo-preview" id="logo-preview">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                            <span>Click or drag to upload logo</span>
+                        </div>
+                        <input type="file" id="ct-logo" accept="image/*" style="display:none">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="ct-desc">Description</label>
+                    <textarea id="ct-desc" class="cyber-textarea" placeholder="Tell players about your team, goals, and playstyle…" rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ct-rank">Rank Requirement</label>
+                        <select id="ct-rank" class="cyber-select">
+                            <option value="Any">Any Rank</option>
+                            <option value="Bronze+">Bronze+</option>
+                            <option value="Silver+">Silver+</option>
+                            <option value="Gold+">Gold+</option>
+                            <option value="Platinum+">Platinum+</option>
+                            <option value="Diamond+">Diamond+</option>
+                            <option value="Immortal+">Immortal+</option>
+                            <option value="Conqueror">Conqueror Only</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ct-region">Region</label>
+                        <select id="ct-region" class="cyber-select">
+                            <option value="Asia">Asia</option>
+                            <option value="India">India</option>
+                            <option value="SEA">SEA</option>
+                            <option value="EU">EU</option>
+                            <option value="NA">NA</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Required Roles (multi-select)</label>
+                    <div class="role-chips" id="role-chips">
+                        <button type="button" class="role-chip" data-role="IGL">IGL</button>
+                        <button type="button" class="role-chip" data-role="Entry">Entry Fragger</button>
+                        <button type="button" class="role-chip" data-role="Support">Support</button>
+                        <button type="button" class="role-chip" data-role="Sniper">Sniper / AWPer</button>
+                        <button type="button" class="role-chip" data-role="Lurker">Lurker</button>
+                        <button type="button" class="role-chip" data-role="Flex">Flex</button>
+                        <button type="button" class="role-chip" data-role="Coach">Coach</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Team Privacy</label>
+                    <div class="privacy-toggle">
+                        <button type="button" class="privacy-btn active" data-privacy="public" id="privacy-public">🌐 Public</button>
+                        <button type="button" class="privacy-btn" data-privacy="private" id="privacy-private">🔒 Private</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="cta-btn primary-btn full-width" style="margin-top:10px">⚔️ Forge Team</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. PLAYER PROFILE MODAL -->
+    <div class="modal-overlay" id="player-profile-modal">
+        <div class="modal-content player-profile-modal-content">
+            <button class="close-modal-btn" id="close-player-profile">✕</button>
+            <h2 class="modal-title">Player <span class="accent-cyan">Profile</span></h2>
+            <p class="modal-desc">Set up your profile to get better team matches.</p>
+
+            <form id="player-profile-form" class="cyber-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pp-game">Primary Game *</label>
+                        <select id="pp-game" class="cyber-select" required>
+                            <option value="">Select Game</option>
+                            <option value="Valorant">Valorant</option>
+                            <option value="BGMI">BGMI</option>
+                            <option value="Free Fire">Free Fire</option>
+                            <option value="COD Mobile">COD Mobile</option>
+                            <option value="CS2">CS2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pp-rank">Rank</label>
+                        <select id="pp-rank" class="cyber-select">
+                            <option value="">Select Rank</option>
+                            <option value="Bronze">Bronze</option>
+                            <option value="Silver">Silver</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Platinum">Platinum</option>
+                            <option value="Diamond">Diamond</option>
+                            <option value="Immortal">Immortal</option>
+                            <option value="Radiant">Radiant</option>
+                            <option value="Ace">Ace (BGMI)</option>
+                            <option value="Conqueror">Conqueror (BGMI)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pp-role">Primary Role</label>
+                        <select id="pp-role" class="cyber-select">
+                            <option value="">Select Role</option>
+                            <option value="IGL">IGL</option>
+                            <option value="Entry">Entry Fragger</option>
+                            <option value="Support">Support</option>
+                            <option value="Sniper">Sniper / AWPer</option>
+                            <option value="Lurker">Lurker</option>
+                            <option value="Flex">Flex</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pp-playstyle">Playstyle</label>
+                        <select id="pp-playstyle" class="cyber-select">
+                            <option value="Aggressive">Aggressive</option>
+                            <option value="Defensive">Defensive</option>
+                            <option value="Balanced">Balanced</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pp-region">Region</label>
+                        <select id="pp-region" class="cyber-select">
+                            <option value="India">India</option>
+                            <option value="Asia">Asia</option>
+                            <option value="SEA">SEA</option>
+                            <option value="EU">EU</option>
+                            <option value="NA">NA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pp-language">Language</label>
+                        <select id="pp-language" class="cyber-select">
+                            <option value="Hindi">Hindi</option>
+                            <option value="English">English</option>
+                            <option value="Tamil">Tamil</option>
+                            <option value="Telugu">Telugu</option>
+                            <option value="Bengali">Bengali</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pp-playtime">Preferred Play Time</label>
+                        <select id="pp-playtime" class="cyber-select">
+                            <option value="Morning">Morning (6am-12pm)</option>
+                            <option value="Afternoon">Afternoon (12pm-6pm)</option>
+                            <option value="Evening">Evening (6pm-12am)</option>
+                            <option value="Night">Night (12am-6am)</option>
+                            <option value="Flexible">Flexible / Any</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Voice Chat</label>
+                        <div class="privacy-toggle">
+                            <button type="button" class="privacy-btn active" data-vc="yes" id="vc-yes">🎙️ Yes</button>
+                            <button type="button" class="privacy-btn" data-vc="no" id="vc-no">🔇 No</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pp-kd">K/D Ratio</label>
+                        <input type="number" id="pp-kd" step="0.1" min="0" max="20" placeholder="e.g. 1.8">
+                    </div>
+                    <div class="form-group">
+                        <label for="pp-winrate">Win Rate (%)</label>
+                        <input type="number" id="pp-winrate" min="0" max="100" placeholder="e.g. 62">
+                    </div>
+                </div>
+
+                <button type="submit" class="cta-btn primary-btn full-width" style="margin-top:10px">💾 Save Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="teams.js"></script>
+</body>
+
+</html>

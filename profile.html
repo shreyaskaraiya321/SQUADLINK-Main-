@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Squadlink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="SL.css">
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-trail trail-1"></div>
+    <div class="cursor-trail trail-2"></div>
+    <div class="cursor-trail trail-3"></div>
+
+    <!-- Minimal Nav -->
+    <header class="navbar" style="position: absolute; background: transparent; border: none; box-shadow: none;">
+        <div class="nav-container" style="justify-content: space-between; padding-top: 20px;">
+            <a href="SL.html" class="logo">
+                <img src="squadlink_logo.png" alt="Squadlink" style="height: 80px; width: auto; object-fit: contain;">
+            </a>
+            <button class="cta-btn secondary-btn" onclick="window.location.href='SL.html'">Back to Home</button>
+        </div>
+    </header>
+
+    <!-- Background -->
+    <div class="hero-bg" style="position: fixed;">
+        <div class="grid-container">
+            <div class="animated-grid"></div>
+        </div>
+        <div class="particles"></div>
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <!-- Profile Container -->
+    <div class="login-wrapper">
+        <div class="login-container profile-container">
+            <div class="login-header">
+                <h2>Operative Profile</h2>
+                <p>Update your credentials and identity</p>
+                <div id="formMessage" style="font-size: 0.9rem; margin-top: 10px; display: none;"></div>
+            </div>
+            
+            <form id="profileForm" class="login-form">
+                
+                <div class="avatar-upload">
+                    <div class="avatar-preview">
+                        <img id="avatarImage" src="https://via.placeholder.com/150/1a1a2e/00FFFF?text=Avatar" alt="Profile Picture">
+                        <div class="avatar-overlay">
+                            <span>Change</span>
+                        </div>
+                    </div>
+                    <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="username" required placeholder=" ">
+                    <label for="username">Username</label>
+                    <div class="input-glow"></div>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" id="email" required placeholder=" " disabled>
+                    <label for="email">Email Address</label>
+                    <div class="input-glow"></div>
+                </div>
+                
+                <div class="input-group" style="opacity: 0.6; pointer-events: none;">
+                    <input type="password" id="password" value="********" readonly placeholder=" ">
+                    <label for="password">Password (Currently Immutable)</label>
+                    <div class="input-glow"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="cta-btn primary-btn login-btn">
+                        <span>Save Profile -></span>
+                    </button>
+                    <button type="button" id="logoutBtn" class="cta-btn danger-btn login-btn" style="margin-top: 15px; background: rgba(255,51,102,0.1); border-color: #ff3366; color: #ff3366;">
+                        <span>Disconnect Link</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
+</body>
+</html>
