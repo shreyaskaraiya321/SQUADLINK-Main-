@@ -356,18 +356,12 @@
 @keyframes urgencyBlink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.65; }
+}
 
 /* PULSE GLOW FOR NEARLY-FULL TOURNAMENTS */
-}
 .pulse-glow { border-color: rgba(255, 51, 51, 0.4) !important; }
 
-.tourney-card.pulse-glow { border-color: rgba(255, 51, 51, 0.4) !important; }
-
-
-    50% { box-shadow: 0 0 12px rgba(255, 180, 171, 0.3); }
-
 /* TOURNAMENT GRID */
-}
 .tourney-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -692,10 +686,6 @@
     
 }
 
-
-    50% { box-shadow: none; }
-
-}
 .room-card-title {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.95rem;
