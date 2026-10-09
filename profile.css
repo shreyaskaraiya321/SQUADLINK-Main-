@@ -18,11 +18,11 @@
     border-radius: 50%;
     position: relative;
     overflow: hidden;
-    border: 2px solid var(--color-cyan);
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    border: 2px solid var(--color-primary);
+    box-shadow: var(--shadow-level-2);
     cursor: pointer;
     transition: all 0.3s ease;
-    background: #0a0e1a;
+    background: var(--color-bg-base);
 }
 
 .avatar-preview img {
@@ -47,7 +47,7 @@
 }
 
 .avatar-preview:hover {
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+    box-shadow: var(--shadow-level-2);
     transform: scale(1.05);
 }
 
@@ -56,13 +56,18 @@
 }
 
 .avatar-overlay span {
-    color: var(--color-cyan);
-    font-family: 'Audiowide', sans-serif;
+    color: var(--color-primary);
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 0.9rem;
-    text-shadow: var(--glow-cyan);
+    text-shadow: var(--glow-primary);
 }
 
 .danger-btn:hover {
-    background: rgba(255, 51, 102, 0.2) !important;
-    box-shadow: 0 0 15px rgba(255, 51, 102, 0.5) !important;
+    background: rgba(255, 180, 171, 0.2) !important;
+    box-shadow: 0 0 12px rgba(255, 180, 171, 0.3);
+}
+
+.secondary-btn:hover {
+    background: rgba(123, 82, 171, 0.16);
+    border-color: #9D71D0;
 }

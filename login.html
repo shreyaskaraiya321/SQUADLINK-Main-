@@ -4,22 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Squadlink</title>
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="SL.css">
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="custom-cursor"></div>
-    <div class="cursor-trail trail-1"></div>
-    <div class="cursor-trail trail-2"></div>
-    <div class="cursor-trail trail-3"></div>
-
+                
     <!-- Minimal Nav -->
-    <header class="navbar" style="position: absolute; background: transparent; border: none; box-shadow: none;">
+    <header class="navbar">
         <div class="nav-container" style="justify-content: center; padding-top: 20px;">
-            <a href="SL.html" class="logo">
-                <img src="squadlink_logo.png" alt="Squadlink" style="height: 80px; width: auto; object-fit: contain;">
+            <a href="SL.html" class="logo" style="text-decoration: none; display: flex; align-items: center;">
+                <img src="squadlink_logo.png" alt="Squadlink" style="height: 45px; width: auto; object-fit: contain;">
             </a>
         </div>
     </header>
@@ -29,10 +24,7 @@
         <div class="grid-container">
             <div class="animated-grid"></div>
         </div>
-        <div class="particles"></div>
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-    </div>
+        </div>
 
     <!-- Login Container -->
     <div class="login-wrapper">
@@ -40,7 +32,7 @@
             <div class="login-header">
                 <h2>Access Granted</h2>
                 <p>Enter your credentials to continue</p>
-                <div id="formMessage" style="color: #ff3366; font-size: 0.9rem; margin-top: 10px; display: none; text-shadow: 0 0 5px rgba(255, 51, 102, 0.5);"></div>
+                <div id="formMessage" style="color: var(--color-error); font-size: 0.9rem; margin-top: 10px; display: none; text-shadow: 0 0 5px rgba(255, 180, 171, 0.5);"></div>
             </div>
             
             <form id="loginForm" class="login-form">

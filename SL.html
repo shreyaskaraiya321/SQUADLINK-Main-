@@ -7,46 +7,32 @@
     <title>Squadlink - Where Champions Are Forged</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Roboto:wght@300;400;500;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600&family=Space+Grotesk:wght@600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="SL.css">
 </head>
 
 <body>
     <!-- Custom Cursor -->
-    <div class="custom-cursor"></div>
-    <div class="cursor-trail trail-1"></div>
-    <div class="cursor-trail trail-2"></div>
-    <div class="cursor-trail trail-3"></div>
-
-    <!-- Scroll Progress Indicator -->
-    <div class="scroll-indicator">
-        <svg width="60" height="60">
-            <ci rcle class="progress-bg" cx="30" cy="30" r="27" />
-            <circle class="progress-ring" cx="30" cy="30" r="27" />
-            <defs>
-                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#00FFFF" />
-                    <stop offset="100%" stop-color="#FF9900" />
-                </linearGradient>
-            </defs>
-        </svg>
-        <div class="center-circle">
-            <span class="scroll-percentage">0%</span>
-        </div>
-    </div>
-
+    
     <!-- Navigation -->
     <header class="navbar">
         <div class="nav-container">
-            <img src="squadlink_logo.png" alt="Squadlink" style="height: 120px; width: auto; object-fit: contain;">
+            <a href="SL.html" class="logo" style="text-decoration: none; display: flex; align-items: center;">
+                <img src="squadlink_logo.png" alt="Squadlink" style="height: 45px; width: auto; object-fit: contain;">
+            </a>
             <nav class="nav-links">
                 <a href="#home" class="nav-link active">Home</a>
                 <a href="tournaments.html" class="nav-link">Tournaments</a>
                 <a href="teams.html" class="nav-link">Teams</a>
                 <a href="#about" class="nav-link">About</a>
             </nav>
-            <button class="cta-btn join-btn" onclick="window.location.href='login.html'">Join Now</button>
+            <div class="nav-actions" style="display:flex; align-items:center; gap: 15px;">
+                <!-- Notification Bell -->
+                
+                </div>
+                <button class="cta-btn join-btn" onclick="window.location.href='login.html'">Join Waitlist</button>
+            </div>
             <button class="mobile-menu-btn">
                 <span></span>
                 <span></span>
@@ -58,74 +44,39 @@
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-bg">
-            <div class="grid-container">
-                <div class="animated-grid"></div>
             </div>
-            <div class="particles"></div>
-            <div class="glow-orb orb-1"></div>
-            <div class="glow-orb orb-2"></div>
-        </div>
 
         <div class="hero-content">
             <div class="hero-logo"
-                style="display: flex; justify-content: center; margin-bottom: 2rem; animation: none !important;">
-                <img src="squadlink_logo.png" alt="Squadlink"
-                    style="height: 600px; width: auto; object-fit: contain; animation: none !important;">
+                style="display: flex; justify-content: center; margin-bottom: 2rem;">
+                <img src="squadlink_logo.png" alt="Squadlink" class="hero-logo-img"
+                    style="height: 300px; width: auto; object-fit: contain;">
             </div>
 
-            <p class="hero-subtitle">Where Champions Are Forged</p>
-            <p class="hero-description">
-                Join the ultimate esports platform where elite gamers compete, connect, and conquer.
-                Build your legacy in the world's most competitive gaming community.
+            <p class="hero-subtitle" id="hero-subtitle">Your entire gaming identity. One platform.</p>
+            <p class="hero-description" id="hero-description">
+                Improve your skills. Find your squad. Grow your channel. Build your esports career — built for Indian gamers.
             </p>
+
             <div class="hero-buttons">
-                <button class="cta-btn primary-btn" onclick="window.location.href='login.html'">
-                    <span>Start Playing</span>
-                </button>
-                <button class="cta-btn secondary-btn">
-                    <span>Learn More</span>
+                <button class="cta-btn primary-btn waitlist-main-btn">
+                    <span>Join the Waitlist — Be a Founding Member</span>
                 </button>
             </div>
         </div>
 
-        <!-- Floating Devices -->
-        <div class="floating-device device-laptop">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                    d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z" />
-            </svg>
+        <div class="hero-corners">
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
         </div>
-        <div class="floating-device device-controller">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                    d="M21.58 16.09l-1.09-7.66A3.996 3.996 0 0016.53 5H7.47a3.996 3.996 0 00-3.96 3.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.37 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" />
-            </svg>
-        </div>
-        <div class="floating-device device-phone">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                    d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" />
-            </svg>
-        </div>
-        <div class="floating-device device-handheld">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                    d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
-            </svg>
-        </div>
-
-        <!-- <div class="scroll-mouse">
-            <div class="mouse">
-                <div class="wheel"></div>
-            </div>
-            <span>Scroll</span>
-        </div> -->
     </section>
 
     <!-- Stats Section -->
     <section id="stats" class="stats-section">
         <div class="container">
-            <h2 class="section-title">Games Worth Checking Out</h2>
+            <h2 class="section-title">Pick Your Game. Find Your Squad.</h2>
             <div class="stats-grid">
                 <div class="stat-card" data-aos="fade-up" data-delay="0">
                     <div class="stat-icon">
@@ -139,7 +90,6 @@
                         </svg>
                     </div>
                     <div class="stat-title">Battlegrounds Mobile India</div>
-                    <div class="stat-label" style="text-transform:none;">300+ Active Players</div>
                 </div>
                 <div class="stat-card" data-aos="fade-up" data-delay="100">
                     <div class="stat-icon">
@@ -153,7 +103,6 @@
                         </svg>
                     </div>
                     <div class="stat-title">Free Fire</div>
-                    <div class="stat-label" style="text-transform:none;">350+ Active Players</div>
                 </div>
                 <div class="stat-card" data-aos="fade-up" data-delay="200">
                     <div class="stat-icon">
@@ -164,18 +113,14 @@
                         </svg>
                     </div>
                     <div class="stat-title">Call of Duty Mobile</div>
-                    <div class="stat-label" style="text-transform:none;">280+ Active Players</div>
                 </div>
                 <div class="stat-card" data-aos="fade-up" data-delay="300">
                     <div class="stat-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="2,4 2,12 8,20 14,20" />
-                            <polygon points="16,20 22,12 22,20" />
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23.792 2.152a.252.252 0 0 0-.098.083c-3.384 4.23-6.769 8.46-10.15 12.69-.107.093-.025.288.119.265 2.439.003 4.877 0 7.316.001a.66.66 0 0 0 .552-.25c.774-.967 1.55-1.934 2.324-2.903a.72.72 0 0 0 .144-.49c-.002-3.077 0-6.153-.003-9.23.016-.11-.1-.206-.204-.167zM.077 2.166c-.077.038-.074.132-.076.205.002 3.074.001 6.15.001 9.225a.679.679 0 0 0 .158.463l7.64 9.55c.12.152.308.25.505.247 2.455 0 4.91.003 7.365 0 .142.02.222-.174.116-.265C10.661 15.176 5.526 8.766.4 2.35c-.08-.094-.174-.272-.322-.184z"/>
                         </svg>
                     </div>
                     <div class="stat-title">Valorant</div>
-                    <div class="stat-label" style="text-transform:none;">400+ Active Players</div>
                 </div>
             </div>
         </div>
@@ -308,6 +253,9 @@
                 <button class="cta-btn primary-btn large" onclick="window.location.href='login.html'">
                     <span>Create Your Squad</span>
                 </button>
+
+                <button class="move-up-btn" id="move-up-trigger">Move up the queue</button>
+                </div>
             </div>
         </div>
     </section>
@@ -357,6 +305,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Right Side Activity Feed removed -->
 
     <script src="script.js"></script>
 </body>

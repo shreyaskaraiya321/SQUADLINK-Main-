@@ -303,9 +303,8 @@ const icons = {
                                 <polygon points="8.5,5 12,7 15.5,5 15.5,15 12,17 8.5,15" />
                                 <polygon points="17,4 22,7 22,17 17,20" />
                             </svg>`,
-    'Valorant': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="2,4 2,12 8,20 14,20" />
-                    <polygon points="16,20 22,12 22,20" />
+    'Valorant': `<svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.792 2.152a.252.252 0 0 0-.098.083c-3.384 4.23-6.769 8.46-10.15 12.69-.107.093-.025.288.119.265 2.439.003 4.877 0 7.316.001a.66.66 0 0 0 .552-.25c.774-.967 1.55-1.934 2.324-2.903a.72.72 0 0 0 .144-.49c-.002-3.077 0-6.153-.003-9.23.016-.11-.1-.206-.204-.167zM.077 2.166c-.077.038-.074.132-.076.205.002 3.074.001 6.15.001 9.225a.679.679 0 0 0 .158.463l7.64 9.55c.12.152.308.25.505.247 2.455 0 4.91.003 7.365 0 .142.02.222-.174.116-.265C10.661 15.176 5.526 8.766.4 2.35c-.08-.094-.174-.272-.322-.184z"/>
                 </svg>`
 };
 
@@ -399,7 +398,7 @@ function renderFeatured(tourney) {
         timerHtml = `<div class="timer-container" id="timer-feat"></div>`;
     }
     featuredContainer.innerHTML = `
-        <div class="featured-card${pulseGlow ? ' pulse-glow' : ''}" onclick="openModal(${tourney.id})" style="cursor:none;">
+        <div class="featured-card${pulseGlow ? ' pulse-glow' : ''}" onclick="openModal(${tourney.id})" >
             <div class="feat-info">
                 <span class="feat-game">${tourney.game}</span>
                 <h2 class="feat-title">${tourney.name}</h2>
@@ -407,7 +406,7 @@ function renderFeatured(tourney) {
                 <div class="feat-details">
                     <div class="detail-item">
                         <span class="detail-label">Prize Pool</span>
-                        <span class="detail-value" style="color: var(--color-orange);">₹${tourney.prize.toLocaleString()}</span>
+                        <span class="detail-value" style="color: var(--color-secondary);">₹${tourney.prize.toLocaleString()}</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Entry Fee</span>
@@ -450,14 +449,14 @@ function renderGrid(tournaments) {
         const { urgencyTag, pulseGlow, fillPct } = getUrgencyInfo(t);
         const card = document.createElement('div');
         card.className = `tourney-card${pulseGlow ? ' pulse-glow' : ''}`;
-        card.style.cursor = 'none';
+        
 
         let extraBottom = '';
         if (t.status === 'completed' && t.bracket) {
             extraBottom = `<button class="mini-bracket-btn" onclick="event.stopPropagation(); openBracket(${t.id})">🏆 View Bracket</button>`;
         }
         if (t.status === 'live') {
-            extraBottom = `<div class="room-teaser">🔴 LIVE — <span onclick="event.stopPropagation(); openModal(${t.id})" style="color:var(--color-cyan);cursor:none;">View Room Info</span></div>`;
+            extraBottom = `<div class="room-teaser">🔴 LIVE — <span onclick="event.stopPropagation(); openModal(${t.id})" style="color:var(--color-primary);cursor:pointer;">View Room Info</span></div>`;
         }
 
         card.innerHTML = `
@@ -475,7 +474,7 @@ function renderGrid(tournaments) {
                 </div>
                 <div class="card-detail-item">
                     <span class="cd-label">Entry Fee</span>
-                    <span class="cd-value" style="color: var(--color-text-primary);">${t.entry === 0 ? 'Free' : '₹' + t.entry}</span>
+                    <span class="cd-value" style="color: var(--text-primary);">${t.entry === 0 ? 'Free' : '₹' + t.entry}</span>
                 </div>
             </div>
             <div class="progress-container">
@@ -502,16 +501,7 @@ function renderGrid(tournaments) {
         if (t.status === 'upcoming') startCountdown(`timer-grid-${t.id}`, t.startTime);
     });
 
-    // Reattach cursor hover
-    const newBtns = document.querySelectorAll('.tourney-card .cta-btn, .featured-card .cta-btn, .custom-select select, input');
-    const cursor = document.querySelector('.custom-cursor');
-    if (cursor) {
-        newBtns.forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-    }
-}
+    
 
 // ========== HISTORY SECTION ==========
 function renderHistory() {
@@ -599,7 +589,7 @@ window.openModal = function (id) {
                 </div>
                 <div class="room-field">
                     <span class="room-label">Status</span>
-                    <span class="room-val" style="color:#ff3333;">${t.matchStatus}</span>
+                    <span class="room-val" style="color:var(--color-error);">${t.matchStatus}</span>
                 </div>
             </div>
         </div>`;
@@ -664,7 +654,7 @@ window.openModal = function (id) {
             <div class="modal-meta-item"><span class="meta-label">Mode</span><span class="meta-val">${t.mode}</span></div>
             <div class="modal-meta-item"><span class="meta-label">Map</span><span class="meta-val">${t.map}</span></div>
             <div class="modal-meta-item"><span class="meta-label">Entry Fee</span><span class="meta-val">${t.entry === 0 ? 'Free' : '₹' + t.entry}</span></div>
-            <div class="modal-meta-item"><span class="meta-label">Slots Left</span><span class="meta-val" style="color:${t.slots - t.joined <= 3 ? '#ff3333' : 'var(--color-cyan)'};">${t.slots - t.joined}</span></div>
+            <div class="modal-meta-item"><span class="meta-label">Slots Left</span><span class="meta-val" style="color:${t.slots - t.joined <= 3 ? 'var(--color-error)' : 'var(--color-primary)'};">${t.slots - t.joined}</span></div>
             <div class="modal-meta-item"><span class="meta-label">Host</span><span class="meta-val">${t.hostName}</span></div>
         </div>
         <div class="modal-rules">
@@ -672,7 +662,7 @@ window.openModal = function (id) {
             <p>${t.rules.replace(/\n/g, '<br>')}</p>
         </div>
         <div class="prize-section">
-            <h4>🏆 Prize Pool — <span style="color:var(--color-orange)">₹${t.prize.toLocaleString()}</span></h4>
+            <h4>🏆 Prize Pool — <span style="color:var(--color-secondary)">₹${t.prize.toLocaleString()}</span></h4>
             <div class="prize-list">${prizeHtml}</div>
         </div>
         ${joinHtml}
@@ -766,7 +756,7 @@ window.copyText = function (text, elId) {
     navigator.clipboard.writeText(text).then(() => {
         showToast('✔ Copied: ' + text);
         const el = document.getElementById(elId);
-        if (el) { el.style.color = 'var(--color-cyan)'; setTimeout(() => { el.style.color = ''; }, 1500); }
+        if (el) { el.style.color = 'var(--color-primary)'; setTimeout(() => { el.style.color = ''; }, 1500); }
     }).catch(() => showToast('Copied: ' + text));
 };
 

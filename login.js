@@ -1,57 +1,3 @@
-// ========== CUSTOM CURSOR ==========
-const cursor = document.querySelector('.custom-cursor');
-const trails = document.querySelectorAll('.cursor-trail');
-const interactiveElements = document.querySelectorAll('a, button, input, .checkbox-container');
-
-let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-let cursorX = mouseX, cursorY = mouseY;
-let trailPositions = [{x: mouseX, y: mouseY}, {x: mouseX, y: mouseY}, {x: mouseX, y: mouseY}];
-
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
-
-function animateCursor() {
-    cursorX += (mouseX - cursorX) * 0.15;
-    cursorY += (mouseY - cursorY) * 0.15;
-
-    cursor.style.left = cursorX + 'px';
-    cursor.style.top = cursorY + 'px';
-
-    trailPositions[0].x += (cursorX - trailPositions[0].x) * 0.1;
-    trailPositions[0].y += (cursorY - trailPositions[0].y) * 0.1;
-
-    trailPositions[1].x += (trailPositions[0].x - trailPositions[1].x) * 0.1;
-    trailPositions[1].y += (trailPositions[0].y - trailPositions[1].y) * 0.1;
-
-    trailPositions[2].x += (trailPositions[1].x - trailPositions[2].x) * 0.1;
-    trailPositions[2].y += (trailPositions[1].y - trailPositions[2].y) * 0.1;
-
-    trails.forEach((trail, index) => {
-        if(trail) {
-            trail.style.left = trailPositions[index].x + 'px';
-            trail.style.top = trailPositions[index].y + 'px';
-        }
-    });
-
-    requestAnimationFrame(animateCursor);
-}
-animateCursor();
-
-if(interactiveElements) {
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-        el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-    });
-}
-
-document.addEventListener('mouseleave', () => {
-    cursor.style.opacity = '0';
-    trails.forEach(t => t.style.opacity = '1');
-});
-document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
-
 // ========== PARTICLE GENERATION ==========
 function createParticles() {
     const particlesContainer = document.querySelector('.particles');
@@ -64,7 +10,7 @@ function createParticles() {
           position: absolute;
           width: ${Math.random() * 3 + 1}px;
           height: ${Math.random() * 3 + 1}px;
-          background: ${Math.random() > 0.5 ? '#00FFFF' : '#FF9900'};
+          background: ${Math.random() > 0.5 ? 'var(--color-primary)' : 'var(--color-secondary)'};
           border-radius: 50%;
           left: ${Math.random() * 100}%;
           top: ${Math.random() * 100}%;
@@ -166,8 +112,8 @@ function showMessage(msg, isError = true) {
     if(!formMessage) return;
     formMessage.textContent = msg;
     formMessage.style.display = 'block';
-    formMessage.style.color = isError ? '#ff3366' : '#00ffff';
-    formMessage.style.textShadow = isError ? '0 0 5px rgba(255, 51, 102, 0.5)' : '0 0 5px rgba(0, 255, 255, 0.5)';
+    formMessage.style.color = isError ? 'var(--color-error)' : 'var(--color-primary)';
+    formMessage.style.textShadow = isError ? '0 0 5px rgba(255, 180, 171, 0.5)' : '0 0 5px rgba(229, 216, 184, 0.5)';
 }
 
 // ========== FORM HANDLING / VALIDATION ==========
@@ -359,13 +305,13 @@ socialButtons.forEach(btn => {
         const container = document.querySelector('.login-container');
         container.style.transition = "box-shadow 0.5s ease";
         const originalShadow = container.style.boxShadow;
-        container.style.boxShadow = "0 0 60px rgba(0, 255, 255, 0.4), inset 0 0 30px rgba(0, 255, 255, 0.1)";
+        container.style.boxShadow = "0 0 60px rgba(229, 216, 184, 0.4), inset 0 0 30px rgba(229, 216, 184, 0.1)";
         
         // Simulation delays
         setTimeout(() => {
             loginHeader.textContent = "Link Established!";
             loginHeaderSub.textContent = `Successfully connected to ${provider}.`;
-            container.style.boxShadow = "0 0 60px rgba(0, 255, 255, 0.8), inset 0 0 30px rgba(0, 255, 255, 0.4)";
+            container.style.boxShadow = "0 0 60px rgba(229, 216, 184, 0.8), inset 0 0 30px rgba(229, 216, 184, 0.4)";
             
             // Set dummy social user
             const socialUser = { username: `${provider}User`, email: `user@${provider.toLowerCase()}.com`, provider: provider };

@@ -11,13 +11,13 @@
 
 .login-container {
     background: rgba(16, 20, 35, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 255, 255, 0.2);
+    
+    border: 1px solid rgba(229, 216, 184, 0.2);
     border-radius: 20px;
     padding: 50px;
     width: 100%;
     max-width: 450px;
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.1), inset 0 0 20px rgba(0, 255, 255, 0.05);
+    box-shadow: var(--shadow-level-2);
     animation: slideUp 0.6s var(--ease-bounce) forwards;
     transform: translateY(50px);
     opacity: 0;
@@ -28,24 +28,24 @@
         transform: translateY(0);
         opacity: 1;
     }
-}
 
+}
 .login-header {
     text-align: center;
     margin-bottom: 40px;
 }
 
 .login-header h2 {
-    font-family: 'Audiowide', sans-serif;
-    color: var(--color-cyan);
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--color-primary);
     font-size: 2rem;
     margin-bottom: 10px;
-    text-shadow: var(--glow-cyan);
+    text-shadow: var(--glow-primary);
     letter-spacing: 2px;
 }
 
 .login-header p {
-    color: var(--color-text-secondary);
+    color: var(--text-muted);
     font-size: 1rem;
 }
 
@@ -61,11 +61,11 @@
 
 .input-group input {
     width: 100%;
-    background: rgba(10, 14, 26, 0.6);
+    background: rgba(13, 11, 18, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     padding: 15px 20px;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     font-size: 1rem;
     font-family: 'Roboto', sans-serif;
     transition: all 0.3s ease;
@@ -77,7 +77,7 @@
     left: 20px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--color-text-secondary);
+    color: var(--text-muted);
     font-size: 1rem;
     pointer-events: none;
     transition: all 0.3s ease;
@@ -88,25 +88,25 @@
 
 .input-group input:focus,
 .input-group input:not(:placeholder-shown) {
-    border-color: var(--color-cyan);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-level-2);
 }
 
 .input-group input:focus + label,
 .input-group input:not(:placeholder-shown) + label {
     top: 0;
     font-size: 0.8rem;
-    color: var(--color-cyan);
+    color: var(--color-primary);
     background: rgba(16, 20, 35, 1);
 }
 
 /* Validation styling */
 .input-group.error input {
-    border-color: #ff3366;
-    box-shadow: 0 0 15px rgba(255, 51, 102, 0.2);
+    border-color: var(--color-error);
+    box-shadow: 0 0 12px rgba(255, 180, 171, 0.3);
 }
 .input-group.error label {
-    color: #ff3366;
+    color: var(--color-error);
 }
 
 .form-options {
@@ -120,7 +120,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--color-text-secondary);
+    color: var(--text-muted);
     cursor: pointer;
     position: relative;
     user-select: none;
@@ -134,7 +134,7 @@
 .checkmark {
     width: 20px;
     height: 20px;
-    background: rgba(10, 14, 26, 0.6);
+    background: rgba(13, 11, 18, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     display: flex;
@@ -144,26 +144,26 @@
 }
 
 .checkbox-container input:checked ~ .checkmark {
-    background: var(--color-cyan);
-    border-color: var(--color-cyan);
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-level-2);
 }
 
 .checkbox-container input:checked ~ .checkmark::after {
     content: '✓';
-    color: var(--color-bg-dark);
+    color: var(--color-bg-base);
     font-weight: bold;
     font-size: 14px;
 }
 
 .forgot-password {
-    color: var(--color-orange);
+    color: var(--color-secondary);
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
 .forgot-password:hover {
-    text-shadow: var(--glow-orange);
+    text-shadow: var(--glow-secondary);
 }
 
 .login-btn {
@@ -179,7 +179,7 @@
 }
 
 .social-login p {
-    color: var(--color-text-secondary);
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-bottom: 20px;
     position: relative;
@@ -207,49 +207,49 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: rgba(10, 14, 26, 0.6);
+    background: rgba(13, 11, 18, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .social-btn:hover {
     transform: translateY(-5px);
     background: rgba(255, 255, 255, 0.1);
-    border-color: var(--color-cyan);
-    box-shadow: var(--glow-cyan);
-    color: var(--color-cyan);
+    border-color: var(--color-primary);
+    box-shadow: none;
+    color: var(--color-primary);
 }
 
 .social-btn.google:hover {
     border-color: #ea4335;
-    box-shadow: 0 0 15px rgba(234, 67, 53, 0.5);
+    box-shadow: none;
     color: #ea4335;
 }
 
 .social-btn.discord:hover {
     border-color: #5865F2;
-    box-shadow: 0 0 15px rgba(88, 101, 242, 0.5);
+    box-shadow: none;
     color: #5865F2;
 }
 
 .social-btn.twitch:hover {
     border-color: #9146FF;
-    box-shadow: 0 0 15px rgba(145, 70, 255, 0.5);
+    box-shadow: none;
     color: #9146FF;
 }
 
 .toggle-form {
     margin-top: 30px;
     text-align: center;
-    color: var(--color-text-secondary);
+    color: var(--text-muted);
 }
 
 .toggle-form a {
-    color: var(--color-cyan);
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: bold;
     margin-left: 5px;
@@ -257,5 +257,10 @@
 }
 
 .toggle-form a:hover {
-    text-shadow: var(--glow-cyan);
+    text-shadow: var(--glow-primary);
+}
+
+.secondary-btn:hover {
+    background: rgba(123, 82, 171, 0.16);
+    border-color: #9D71D0;
 }

@@ -9,9 +9,81 @@ const STORE = {
   set requests(v) { localStorage.setItem('squadlink_joinRequests', JSON.stringify(v)); },
   get invites() { return JSON.parse(localStorage.getItem('squadlink_invites') || '[]'); },
   set invites(v) { localStorage.setItem('squadlink_invites', JSON.stringify(v)); },
+  get activities() { return JSON.parse(localStorage.getItem('squadlink_activities') || '[]'); },
+  set activities(v) { localStorage.setItem('squadlink_activities', JSON.stringify(v)); },
+  get notifications() { return JSON.parse(localStorage.getItem('squadlink_notifications') || '[]'); },
+  set notifications(v) { localStorage.setItem('squadlink_notifications', JSON.stringify(v)); },
 };
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function getLevel(xp) { return Math.floor(xp / 100) || 1; }
+
+function addActivity(teamId, message) {
+  const acts = STORE.activities;
+  acts.unshift({ id: uid(), teamId, message, timestamp: new Date().toISOString() });
+  if (acts.length > 200) acts.length = 200;
+  STORE.activities = acts;
+}
+
+function addSquadXP(teamId, amount) {
+  const teams = STORE.teams;
+  const team = teams.find(t => t.id === teamId);
+  if (!team) return;
+  const oldLevel = team.level || 1;
+  team.xp = (team.xp || 0) + amount;
+  team.weeklyXp = (team.weeklyXp || 0) + amount;
+  team.level = getLevel(team.xp);
+  if (team.level > oldLevel) {
+    addActivity(teamId, `⭐ Squad leveled up to Level ${team.level}!`);
+    team.members.forEach(m => addNotification(m.userId, `Your squad ${team.name} reached Level ${team.level}!`));
+  }
+  STORE.teams = teams;
+}
+
+function addUserXP(amount) {
+  const userStr = localStorage.getItem('squadlink_currentUser');
+  if(!userStr) return;
+  const user = JSON.parse(userStr);
+  const oldLevel = user.level || 1;
+  user.xp = (user.xp || 0) + amount;
+  user.level = getLevel(user.xp);
+  if (user.level > oldLevel) {
+    addNotification(user.id, `Congratulations! You leveled up to Level ${user.level}!`);
+  }
+  localStorage.setItem('squadlink_currentUser', JSON.stringify(user));
+  let users = JSON.parse(localStorage.getItem('squadlink_users')) || [];
+  const uIndex = users.findIndex(u => u.email === user.email);
+  if(uIndex !== -1) { users[uIndex].xp = user.xp; users[uIndex].level = user.level; localStorage.setItem('squadlink_users', JSON.stringify(users)); }
+}
+
+function addNotification(userId, message) {
+  const notifs = STORE.notifications;
+  notifs.unshift({ id: uid(), userId, message, read: false, timestamp: new Date().toISOString() });
+  STORE.notifications = notifs;
+  renderNotifications();
+}
+
+function renderNotifications() {
+  const user = JSON.parse(localStorage.getItem('squadlink_currentUser') || 'null');
+  if (!user) return;
+  const notifs = STORE.notifications.filter(n => n.userId === user.id || n.userId === 'all');
+  const unread = notifs.filter(n => !n.read).length;
+  const badge = document.getElementById('nav-notif-badge');
+  if (badge) {
+    badge.textContent = unread;
+    badge.style.display = unread > 0 ? 'inline-block' : 'none';
+  }
+  const list = document.getElementById('nav-notif-list');
+  if (list) {
+    list.innerHTML = notifs.map(n => `
+      <div style="padding:8px;background:${n.read?'transparent':'rgba(229, 216, 184, 0.1)'};border-radius:4px;font-size:0.8rem;border-left:2px solid ${n.read?'transparent':'var(--color-primary)'}">
+        <div>${n.message}</div>
+        <div style="font-size:0.6rem;color:#aaa;margin-top:2px">${new Date(n.timestamp).toLocaleTimeString()}</div>
+      </div>
+    `).join('') || '<div style="color:#aaa;font-size:0.8rem;text-align:center">No notifications</div>';
+  }
+}
 
 // ========== MOCK PLAYERS ==========
 const MOCK_PLAYERS = [
@@ -33,11 +105,11 @@ const MOCK_PLAYERS = [
 function seedTeams() {
   if (STORE.teams.length > 0) return;
   STORE.teams = [
-    { id:'t1', name:'Neon Predators', game:'Valorant', logo:'🦁', description:'Diamond+ Valorant squad looking for an IGL and Support. Compete in weekly tournaments.', requiredRoles:['IGL','Support'], rankRequirement:'Diamond+', region:'India', privacy:'public', leaderId:'demo', members:[{userId:'demo',username:'Founder',role:'Entry',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:24,wins:17,tournamentsPlayed:3}, achievements:[{icon:'🏆',name:'First Blood',desc:'First tournament win'},{icon:'🔥',name:'Hot Streak',desc:'5 wins in a row'},{icon:'⚔️',name:'Veteran',desc:'25+ matches played'}], matchHistory:[{result:'win',map:'Bind',score:'13-8',date:'2025-03-25'},{result:'loss',map:'Ascent',score:'9-13',date:'2025-03-22'},{result:'win',map:'Icebox',score:'13-10',date:'2025-03-20'}], createdAt:new Date().toISOString() },
-    { id:'t2', name:'Shadow Brotherhood', game:'BGMI', logo:'🐺', description:'Conqueror-level BGMI team for competitive ranked and tournaments. Looking for a sniper.', requiredRoles:['Sniper'], rankRequirement:'Conqueror', region:'India', privacy:'public', leaderId:'demo2', members:[{userId:'demo2',username:'BattleKing',role:'IGL',joinedAt:new Date().toISOString()},{userId:'p8',username:'VortexIGL',role:'Flex',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:40,wins:28,tournamentsPlayed:5}, achievements:[{icon:'👑',name:'Conquerors',desc:'All members reached Conqueror'},{icon:'🏆',name:'Champions',desc:'2x tournament champion'},{icon:'💎',name:'Diamond Run',desc:'10 wins in a season'}], matchHistory:[{result:'win',map:'Erangel',score:'#1 Chicken Dinner',date:'2025-03-26'},{result:'win',map:'Miramar',score:'#1 Chicken Dinner',date:'2025-03-24'}], createdAt:new Date().toISOString() },
-    { id:'t3', name:'Ghost Protocol', game:'CS2', logo:'👻', description:'Competitive CS2 squad from EU. Looking for a dedicated support and flex player.', requiredRoles:['Support','Flex'], rankRequirement:'Gold+', region:'EU', privacy:'public', leaderId:'demo3', members:[{userId:'demo3',username:'EUGhost',role:'IGL',joinedAt:new Date().toISOString()},{userId:'p9',username:'PhantomAWP',role:'Sniper',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:18,wins:11,tournamentsPlayed:2}, achievements:[{icon:'💀',name:'Headhunter',desc:'Highest avg HS rating'},{icon:'🎯',name:'Precise',desc:'90%+ HS rate in 5 matches'}], matchHistory:[{result:'win',map:'Mirage',score:'16-11',date:'2025-03-27'},{result:'loss',map:'Dust 2',score:'12-16',date:'2025-03-25'}], createdAt:new Date().toISOString() },
-    { id:'t4', name:'Blaze Squad', game:'Free Fire', logo:'🔥', description:'Free Fire team competing in Asian servers. Recruiting skilled entry fraggers.', requiredRoles:['Entry','Lurker'], rankRequirement:'Diamond+', region:'SEA', privacy:'public', leaderId:'demo4', members:[{userId:'demo4',username:'BlazeMaster',role:'IGL',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:32,wins:20,tournamentsPlayed:4}, achievements:[{icon:'🔥',name:'On Fire',desc:'3 Booyahs in a day'}], matchHistory:[{result:'win',map:'Bermuda',score:'Booyah!',date:'2025-03-26'}], createdAt:new Date().toISOString() },
-    { id:'t5', name:'Phantom Force', game:'COD Mobile', logo:'⚡', description:'COD Mobile squad for Battle Royale and Multiplayer ranked. Any rank welcome.', requiredRoles:['Support','Sniper','Flex'], rankRequirement:'Any', region:'India', privacy:'public', leaderId:'demo5', members:[{userId:'demo5',username:'PhantomX',role:'Entry',joinedAt:new Date().toISOString()},{userId:'p7',username:'CobraEntry',role:'Lurker',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:15,wins:8,tournamentsPlayed:1}, achievements:[], matchHistory:[{result:'loss',map:'Standoff',score:'45-60',date:'2025-03-27'}], createdAt:new Date().toISOString() },
+    { id:'t1', name:'Neon Predators', game:'Valorant', logo:'🦁', description:'Diamond+ Valorant squad looking for an IGL and Support. Compete in weekly tournaments.', requiredRoles:['IGL','Support'], rankRequirement:'Diamond+', region:'India', privacy:'public', leaderId:'demo', xp:250, weeklyXp:50, level:2, members:[{userId:'demo',username:'Founder',role:'Entry',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:24,wins:17,tournamentsPlayed:3}, achievements:[{icon:'🏆',name:'First Blood',desc:'First tournament win'},{icon:'🔥',name:'Hot Streak',desc:'5 wins in a row'},{icon:'⚔️',name:'Veteran',desc:'25+ matches played'}], matchHistory:[{result:'win',map:'Bind',score:'13-8',date:'2025-03-25'},{result:'loss',map:'Ascent',score:'9-13',date:'2025-03-22'},{result:'win',map:'Icebox',score:'13-10',date:'2025-03-20'}], createdAt:new Date().toISOString() },
+    { id:'t2', name:'Shadow Brotherhood', game:'BGMI', logo:'🐺', description:'Conqueror-level BGMI team for competitive ranked and tournaments. Looking for a sniper.', requiredRoles:['Sniper'], rankRequirement:'Conqueror', region:'India', privacy:'public', leaderId:'demo2', xp:1250, weeklyXp:120, level:12, members:[{userId:'demo2',username:'BattleKing',role:'IGL',joinedAt:new Date().toISOString()},{userId:'p8',username:'VortexIGL',role:'Flex',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:40,wins:28,tournamentsPlayed:5}, achievements:[{icon:'👑',name:'Conquerors',desc:'All members reached Conqueror'},{icon:'🏆',name:'Champions',desc:'2x tournament champion'},{icon:'💎',name:'Diamond Run',desc:'10 wins in a season'}], matchHistory:[{result:'win',map:'Erangel',score:'#1 Chicken Dinner',date:'2025-03-26'},{result:'win',map:'Miramar',score:'#1 Chicken Dinner',date:'2025-03-24'}], createdAt:new Date().toISOString() },
+    { id:'t3', name:'Ghost Protocol', game:'CS2', logo:'👻', description:'Competitive CS2 squad from EU. Looking for a dedicated support and flex player.', requiredRoles:['Support','Flex'], rankRequirement:'Gold+', region:'EU', privacy:'public', leaderId:'demo3', xp:80, weeklyXp:80, level:1, members:[{userId:'demo3',username:'EUGhost',role:'IGL',joinedAt:new Date().toISOString()},{userId:'p9',username:'PhantomAWP',role:'Sniper',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:18,wins:11,tournamentsPlayed:2}, achievements:[{icon:'💀',name:'Headhunter',desc:'Highest avg HS rating'},{icon:'🎯',name:'Precise',desc:'90%+ HS rate in 5 matches'}], matchHistory:[{result:'win',map:'Mirage',score:'16-11',date:'2025-03-27'},{result:'loss',map:'Dust 2',score:'12-16',date:'2025-03-25'}], createdAt:new Date().toISOString() },
+    { id:'t4', name:'Blaze Squad', game:'Free Fire', logo:'🔥', description:'Free Fire team competing in Asian servers. Recruiting skilled entry fraggers.', requiredRoles:['Entry','Lurker'], rankRequirement:'Diamond+', region:'SEA', privacy:'public', leaderId:'demo4', xp:420, weeklyXp:10, level:4, members:[{userId:'demo4',username:'BlazeMaster',role:'IGL',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:32,wins:20,tournamentsPlayed:4}, achievements:[{icon:'🔥',name:'On Fire',desc:'3 Booyahs in a day'}], matchHistory:[{result:'win',map:'Bermuda',score:'Booyah!',date:'2025-03-26'}], createdAt:new Date().toISOString() },
+    { id:'t5', name:'Phantom Force', game:'COD Mobile', logo:'⚡', description:'COD Mobile squad for Battle Royale and Multiplayer ranked. Any rank welcome.', requiredRoles:['Support','Sniper','Flex'], rankRequirement:'Any', region:'India', privacy:'public', leaderId:'demo5', xp:310, weeklyXp:30, level:3, members:[{userId:'demo5',username:'PhantomX',role:'Entry',joinedAt:new Date().toISOString()},{userId:'p7',username:'CobraEntry',role:'Lurker',joinedAt:new Date().toISOString()}], stats:{matchesPlayed:15,wins:8,tournamentsPlayed:1}, achievements:[], matchHistory:[{result:'loss',map:'Standoff',score:'45-60',date:'2025-03-27'}], createdAt:new Date().toISOString() },
   ];
 }
 
@@ -68,33 +140,75 @@ window.addEventListener('scroll', () => {
 });
 scrollIndicator.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-// ========== CUSTOM CURSOR ==========
-const cursor = document.querySelector('.custom-cursor');
-const trails = document.querySelectorAll('.cursor-trail');
-let mx=0, my=0, cx=0, cy=0;
-const tp = [{x:0,y:0},{x:0,y:0},{x:0,y:0}];
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-(function animCursor() {
-  cx += (mx-cx)*0.15; cy += (my-cy)*0.15;
-  cursor.style.left = cx+'px'; cursor.style.top = cy+'px';
-  tp[0].x += (cx-tp[0].x)*0.1; tp[0].y += (cy-tp[0].y)*0.1;
-  tp[1].x += (tp[0].x-tp[1].x)*0.1; tp[1].y += (tp[0].y-tp[1].y)*0.1;
-  tp[2].x += (tp[1].x-tp[2].x)*0.1; tp[2].y += (tp[1].y-tp[2].y)*0.1;
-  trails.forEach((t,i) => { t.style.left=tp[i].x+'px'; t.style.top=tp[i].y+'px'; });
-  requestAnimationFrame(animCursor);
-})();
-document.addEventListener('mouseover', e => {
-  if (e.target.closest('a,button,input,select,textarea,.team-card,.player-card,.myteam-card')) cursor.classList.add('hover');
-  else cursor.classList.remove('hover');
-});
 
 // ========== NAV AUTH ==========
+function checkDailyLogin(user) {
+  if (!user) return user;
+  const today = new Date().toDateString();
+  if (user.lastLogin !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (user.lastLogin === yesterday) user.streak = (user.streak || 0) + 1;
+    else user.streak = 1;
+    user.lastLogin = today;
+    user.xp = (user.xp || 0) + 5;
+    user.level = Math.floor(user.xp / 100) || 1;
+    localStorage.setItem('squadlink_currentUser', JSON.stringify(user));
+    let users = JSON.parse(localStorage.getItem('squadlink_users')) || [];
+    const uIndex = users.findIndex(u => u.email === user.email);
+    if(uIndex !== -1) { users[uIndex] = user; localStorage.setItem('squadlink_users', JSON.stringify(users)); }
+    setTimeout(() => toast(`Daily Login: +5 XP! Streak: ${user.streak}🔥`, 'success'), 1000);
+  }
+  return user;
+}
+
 function initNav() {
-  const user = JSON.parse(localStorage.getItem('squadlink_currentUser') || 'null');
+  let user = JSON.parse(localStorage.getItem('squadlink_currentUser') || 'null');
+  user = checkDailyLogin(user);
   const btn = document.getElementById('nav-join-btn');
   if (user && btn) {
-    btn.innerHTML = `${user.profilePhoto ? `<img src="${user.profilePhoto}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;margin-right:6px;vertical-align:middle;border:1px solid #00FFFF">` : ''}<span style="vertical-align:middle">${user.username}</span>`;
+    const userLvl = user.level || 1;
+    const currentXp = user.xp || 0;
+    const xpPercent = Math.min((currentXp % 100) / 100 * 100, 100);
+
+    let contentHtml = '<div style="display:flex; flex-direction:column; align-items:flex-start;">';
+    contentHtml += `<div style="display:flex; align-items:center; gap:8px;">`;
+    if(user.profilePhoto) {
+        contentHtml += `<img src="${user.profilePhoto}" alt="Avatar" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid var(--color-primary);">`;
+    }
+    contentHtml += `<span style="font-weight:bold;">${user.username}</span>`;
+    contentHtml += `<span style="background:rgba(229, 216, 184, 0.2); padding: 2px 6px; border-radius: 4px; font-size:0.7rem; color:var(--color-primary);">Lvl ${userLvl}</span></div>`;
+    
+    // XP Progress Bar
+    contentHtml += `<div style="width:100%; background:rgba(255,255,255,0.1); height:4px; border-radius:2px; margin-top:5px; overflow:hidden;">`;
+    contentHtml += `<div style="width:${xpPercent}%; height:100%; background:var(--gradient-primary);"></div></div>`;
+    contentHtml += '</div>';
+    
+    btn.innerHTML = contentHtml;
+    btn.style.padding = '8px 15px';
+    btn.style.background = 'rgba(20, 17, 29, 0.8)';
+    btn.style.border = '1px solid rgba(229, 216, 184, 0.3)';
     btn.onclick = () => window.location.href = 'profile.html';
+
+    if(!document.getElementById('navLogoutBtn')) {
+        const logoutBtn = document.createElement('button');
+        logoutBtn.id = 'navLogoutBtn';
+        logoutBtn.className = 'cta-btn secondary-btn';
+        logoutBtn.style.marginLeft = '10px';
+        logoutBtn.style.padding = '10px 15px';
+        logoutBtn.style.display = 'inline-flex';
+        logoutBtn.style.alignItems = 'center';
+        logoutBtn.style.borderColor = 'var(--color-error)';
+        logoutBtn.style.color = 'var(--color-error)';
+        logoutBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>`;
+        logoutBtn.title = "Disconnect";
+        
+        logoutBtn.onclick = () => {
+            localStorage.removeItem('squadlink_currentUser');
+            window.location.reload();
+        };
+        
+        btn.parentNode.insertBefore(logoutBtn, btn.nextSibling);
+    }
   }
 }
 
@@ -121,8 +235,29 @@ function initTabs() {
       if (tab.dataset.tab === 'find') renderPlayers();
       if (tab.dataset.tab === 'invites') renderInvites();
       if (tab.dataset.tab === 'myteams') renderMyTeams();
+      if (tab.dataset.tab === 'leaderboard') renderLeaderboard();
     });
   });
+}
+
+function renderLeaderboard() {
+  const container = document.getElementById('leaderboard-list');
+  if (!container) return;
+  const sorted = [...STORE.teams].sort((a, b) => (b.weeklyXp || 0) - (a.weeklyXp || 0)).slice(0, 50);
+  container.innerHTML = sorted.map((t, idx) => `
+    <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;display:flex;align-items:center;gap:15px;border-left:4px solid ${idx===0?'var(--color-secondary)':idx===1?'#C0C0C0':idx===2?'#CD7F32':'var(--color-primary)'};">
+      <div style="font-size:1.5rem;font-weight:bold;width:30px;color:${idx===0?'var(--color-secondary)':idx===1?'#C0C0C0':idx===2?'#CD7F32':'var(--text-muted)'}">${idx+1}</div>
+      <div style="font-size:2rem;line-height:1">${t.logo || '🎮'}</div>
+      <div style="flex-grow:1">
+        <div style="font-size:1.1rem;font-weight:bold;color:var(--text-primary)">${t.name}</div>
+        <div style="font-size:0.8rem;color:var(--text-muted)">${t.game} · Lvl ${t.level||1}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:1.2rem;font-weight:bold;color:var(--color-primary)">${t.weeklyXp || 0}</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;">Weekly XP</div>
+      </div>
+    </div>
+  `).join('') || '<div style="color:#aaa;text-align:center;">No squads yet.</div>';
 }
 
 // ========== RENDER TEAMS ==========
@@ -144,7 +279,7 @@ function renderTeams(filter = {}) {
     const card = document.createElement('div');
     card.className = 'team-card';
     card.innerHTML = `
-      <div class="team-card-banner" style="background:linear-gradient(135deg,${gameColor(team.game)}20,#1a1f35)"></div>
+      <div class="team-card-banner" style="background:linear-gradient(135deg,${gameColor(team.game)}20,var(--color-surface))"></div>
       <div class="team-card-body">
         <div class="team-card-header">
           <div class="team-card-logo">${team.logo || '🎮'}</div>
@@ -179,7 +314,7 @@ function renderTeams(filter = {}) {
 
 function gameColor(g) {
   const c = { Valorant:'#ff4655', BGMI:'#f5a623', 'Free Fire':'#ff6600', 'COD Mobile':'#7fba00', CS2:'#de9b35' };
-  return c[g] || '#00ffff';
+  return c[g] || 'var(--color-primary)';
 }
 
 // ========== RENDER MY TEAMS ==========
@@ -238,8 +373,12 @@ function openTeamProfile(id) {
   document.getElementById('tp-region').textContent = team.region;
   document.getElementById('tp-rank-badge').textContent = team.rankRequirement;
   document.getElementById('tp-privacy-badge').textContent = team.privacy.toUpperCase();
+  document.getElementById('tp-level-badge').textContent = `LVL ${team.level || 1}`;
+  const currXp = (team.xp || 0) % 100;
+  document.getElementById('tp-xp-text').textContent = `${currXp} / 100`;
+  document.getElementById('tp-xp-fill').style.width = `${currXp}%`;
   document.getElementById('tp-logo').innerHTML = team.logoData ? `<img src="${team.logoData}" alt="logo">` : team.logo || '🎮';
-  document.getElementById('tp-hero-bg').style.background = `linear-gradient(135deg,${gameColor(team.game)}15,#0d1127)`;
+  document.getElementById('tp-hero-bg').style.background = `linear-gradient(135deg,${gameColor(team.game)}15,var(--color-bg-base))`;
   document.getElementById('tps-matches').textContent = team.stats.matchesPlayed;
   document.getElementById('tps-wins').textContent = team.stats.wins;
   document.getElementById('tps-winrate').textContent = wr + '%';
@@ -283,6 +422,15 @@ function openTeamProfile(id) {
     histList.innerHTML = team.matchHistory.map(m => `<div class="match-history-item"><span class="mh-result ${m.result==='win'?'mh-win':'mh-loss'}">${m.result.toUpperCase()}</span><span class="mh-map">${m.map}</span><span class="mh-score">${m.score}</span><span class="mh-date">${m.date}</span></div>`).join('');
   } else { histEmpty.classList.remove('hidden'); histList.innerHTML = ''; }
 
+  // Activity Feed
+  const actList = document.getElementById('tp-activity-feed');
+  const actEmpty = document.getElementById('tp-activity-empty');
+  const acts = STORE.activities.filter(a => a.teamId === id).slice(0, 20);
+  if (acts.length) {
+    actEmpty.classList.add('hidden');
+    actList.innerHTML = acts.map(a => `<div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:6px;border-left:3px solid var(--color-primary);"><div style="font-size:0.9rem">${a.message}</div><div style="font-size:0.7rem;color:#aaa;margin-top:4px">${new Date(a.timestamp).toLocaleString()}</div></div>`).join('');
+  } else { actEmpty.classList.remove('hidden'); actList.innerHTML = ''; }
+
   // Join button
   const footer = document.getElementById('tp-footer-actions');
   const joinBtn = document.getElementById('tp-join-btn');
@@ -297,8 +445,12 @@ function openTeamProfile(id) {
   // Simulate buttons (leader)
   const simMatch = document.getElementById('tp-sim-match-btn');
   const simTour = document.getElementById('tp-sim-tournament-btn');
+  const manualMatch = document.getElementById('tp-manual-match-btn');
+  const manualWin = document.getElementById('tp-manual-win-btn');
   if (simMatch) simMatch.onclick = () => simulateMatch(id);
   if (simTour) simTour.onclick = () => simulateTournament(id);
+  if (manualMatch) manualMatch.onclick = () => logManualMatch(id, false);
+  if (manualWin) manualWin.onclick = () => logManualMatch(id, true);
 
   // Reset to roster tab
   clickTPTab('roster');
@@ -339,6 +491,7 @@ function sendInvite(playerId, teamId) {
   if (invites.find(i => i.playerId === playerId && i.teamId === teamId)) { toast('Already invited this player', 'warn'); return; }
   invites.push({ id: uid(), teamId, teamName: team.name, teamLogo: team.logo, playerId, playerName: player.username, status: 'pending', createdAt: new Date().toISOString() });
   STORE.invites = invites;
+  addNotification(playerId, `You have a new invite to join ${team.name}!`);
   toast(`Invited ${player.username} to ${team.name}!`, 'success');
   renderInviteSearch(document.getElementById('invite-search-input').value, teamId);
 }
@@ -348,12 +501,12 @@ function renderInviteSearch(query, teamId) {
   const container = document.getElementById('invite-search-results');
   if (!query.trim()) { container.innerHTML = ''; return; }
   const results = MOCK_PLAYERS.filter(p => p.username.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
-  if (!results.length) { container.innerHTML = '<div style="color:var(--color-text-secondary);font-size:.85rem;padding:10px">No players found</div>'; return; }
+  if (!results.length) { container.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;padding:10px">No players found</div>'; return; }
   container.innerHTML = results.map(p => {
     const invited = STORE.invites.find(i => i.playerId === p.id && i.teamId === teamId);
     return `<div class="invite-result-row">
       <div class="invite-result-avatar">${p.username[0]}</div>
-      <span class="invite-result-name">${p.username} <span style="font-size:.75rem;color:var(--color-text-secondary)">${p.role} · ${p.rank}</span></span>
+      <span class="invite-result-name">${p.username} <span style="font-size:.75rem;color:var(--text-muted)">${p.role} · ${p.rank}</span></span>
       <button class="cta-btn ${invited?'secondary-btn':'primary-btn'} invite-result-btn" data-pid="${p.id}" ${invited?'disabled':''}>
         ${invited ? '✓ Invited' : 'Invite'}
       </button>
@@ -563,11 +716,11 @@ function initAutoFill() {
     drawer.classList.remove('hidden');
     drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     const matchingTeams = STORE.teams.filter(t => t.requiredRoles.length > 0);
-    if (!matchingTeams.length) { results.innerHTML = '<div style="color:var(--color-text-secondary);padding:10px">No teams recruiting right now.</div>'; return; }
+    if (!matchingTeams.length) { results.innerHTML = '<div style="color:var(--text-muted);padding:10px">No teams recruiting right now.</div>'; return; }
     results.innerHTML = matchingTeams.slice(0, 4).map(team => {
       const wr = team.stats.matchesPlayed ? Math.round((team.stats.wins / team.stats.matchesPlayed) * 100) : 0;
       const score = profile ? (team.game === profile.game ? 50 : 20) + (team.region === profile.region ? 30 : 0) + (team.requiredRoles.includes(profile.role) ? 20 : 0) : Math.floor(Math.random() * 50 + 30);
-      return `<div class="team-card" style="cursor:none">
+      return `<div class="team-card" >
         <div class="team-card-body" style="padding:16px">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
             <div class="team-card-logo" style="width:40px;height:40px;font-size:1.2rem">${team.logo}</div>
@@ -616,6 +769,15 @@ function simulateTournament(teamId) {
   }
   STORE.teams = teams;
   toast(won ? '🎉 Tournament Victory! Achievement unlocked!' : '🏅 Tournament completed. Keep competing!', won ? 'success' : 'info');
+  openTeamProfile(teamId);
+}
+
+function logManualMatch(teamId, win) {
+  const xpObj = win ? 30 : 15;
+  addSquadXP(teamId, xpObj);
+  addUserXP(xpObj);
+  addActivity(teamId, win ? '🏆 Team won a ranked match!' : '⚔️ Team played a tough match');
+  toast(`Match logged: +${xpObj} XP`, 'success');
   openTeamProfile(teamId);
 }
 
@@ -768,6 +930,29 @@ function initModals() {
   ['team-profile-modal','create-team-modal','player-profile-modal'].forEach(id => {
     document.getElementById(id).addEventListener('click', e => { if (e.target.id === id) closeModal(id); });
   });
+
+  // Notifications toggle
+  document.getElementById('nav-notif-btn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById('nav-notif-dropdown');
+    if (dropdown) {
+      const isVis = dropdown.style.display === 'block';
+      dropdown.style.display = isVis ? 'none' : 'block';
+      if (!isVis) {
+        const user = JSON.parse(localStorage.getItem('squadlink_currentUser') || 'null');
+        if (user) {
+          const notifs = STORE.notifications;
+          notifs.forEach(n => { if (n.userId === user.id) n.read = true; });
+          STORE.notifications = notifs;
+          renderNotifications();
+        }
+      }
+    }
+  });
+  document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('nav-notif-dropdown');
+    if (dropdown && !e.target.closest('.notifications-wrapper')) dropdown.style.display = 'none';
+  });
 }
 
 // ========== SEARCH & FILTERS ==========
@@ -790,7 +975,7 @@ document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
   const nav = document.querySelector('.nav-links');
   const open = nav.style.display === 'flex';
   nav.style.display = open ? '' : 'flex';
-  if (!open) Object.assign(nav.style, { flexDirection:'column', position:'absolute', top:'100%', left:'0', right:'0', background:'rgba(10,14,26,.98)', padding:'20px', gap:'20px', borderTop:'1px solid rgba(0,255,255,.1)', zIndex:'999' });
+  if (!open) Object.assign(nav.style, { flexDirection:'column', position:'absolute', top:'100%', left:'0', right:'0', background:'rgba(13, 11, 18, .98)', padding:'20px', gap:'20px', borderTop:'1px solid rgba(229, 216, 184, .1)', zIndex:'999' });
 });
 
 // ========== INIT ==========
@@ -807,6 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMyTeams();
   renderPlayers();
   updateInviteBadge();
+  renderNotifications();
 
   // Hero counters
   document.querySelectorAll('.th-stat-num').forEach(el => animCounter(el, parseInt(el.dataset.val)));
