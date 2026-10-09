@@ -442,7 +442,19 @@ function renderFeatured(tourney) {
 function renderGrid(tournaments) {
     tourneyGrid.innerHTML = '';
     if (tournaments.length === 0) {
-        tourneyGrid.innerHTML = `<div class="no-results">No tournaments found matching your filters.</div>`;
+        tourneyGrid.innerHTML = `
+            <div class="no-results">
+                <div class="no-results-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="48" height="48" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                    </svg>
+                </div>
+                <div class="no-results-text">No tournaments available</div>
+                <div class="no-results-subtext">Try adjusting your filters or check back later for new events.</div>
+            </div>`;
         return;
     }
     tournaments.forEach(t => {
