@@ -12,9 +12,9 @@ const tournamentsData = [
         map: "Erangel + Miramar",
         prize: 50000,
         prizeDistribution: [
-            { rank: "🥇 1st Place", amount: 30000 },
-            { rank: "🥈 2nd Place", amount: 15000 },
-            { rank: "🥉 3rd Place", amount: 5000 }
+            { rank: "1st Place", amount: 30000 },
+            { rank: "2nd Place", amount: 15000 },
+            { rank: "3rd Place", amount: 5000 }
         ],
         entry: 500,
         slots: 100,
@@ -36,9 +36,9 @@ const tournamentsData = [
         map: "Ascent, Bind, Haven",
         prize: 25000,
         prizeDistribution: [
-            { rank: "🥇 1st Place", amount: 15000 },
-            { rank: "🥈 2nd Place", amount: 7000 },
-            { rank: "🥉 3rd Place", amount: 3000 }
+            { rank: "1st Place", amount: 15000 },
+            { rank: "2nd Place", amount: 7000 },
+            { rank: "3rd Place", amount: 3000 }
         ],
         entry: 0,
         slots: 32,
@@ -63,9 +63,9 @@ const tournamentsData = [
         map: "Bermuda",
         prize: 15000,
         prizeDistribution: [
-            { rank: "🥇 1st Place", amount: 8000 },
-            { rank: "🥈 2nd Place", amount: 4000 },
-            { rank: "🥉 3rd Place", amount: 3000 }
+            { rank: "1st Place", amount: 8000 },
+            { rank: "2nd Place", amount: 4000 },
+            { rank: "3rd Place", amount: 3000 }
         ],
         entry: 100,
         slots: 50,
@@ -87,9 +87,9 @@ const tournamentsData = [
         map: "Standoff, Raid",
         prize: 100000,
         prizeDistribution: [
-            { rank: "🥇 1st Place", amount: 60000 },
-            { rank: "🥈 2nd Place", amount: 25000 },
-            { rank: "🥉 3rd Place", amount: 15000 }
+            { rank: "1st Place", amount: 60000 },
+            { rank: "2nd Place", amount: 25000 },
+            { rank: "3rd Place", amount: 15000 }
         ],
         entry: 1000,
         slots: 64,
@@ -125,9 +125,9 @@ const tournamentsData = [
         map: "Sanhok",
         prize: 10000,
         prizeDistribution: [
-            { rank: "🥇 1st Place", amount: 6000 },
-            { rank: "🥈 2nd Place", amount: 3000 },
-            { rank: "🥉 3rd Place", amount: 1000 }
+            { rank: "1st Place", amount: 6000 },
+            { rank: "2nd Place", amount: 3000 },
+            { rank: "3rd Place", amount: 1000 }
         ],
         entry: 0,
         slots: 100,
@@ -149,9 +149,9 @@ const tournamentsData = [
         map: "Split, Lotus",
         prize: 5000,
         prizeDistribution: [
-            { rank: "🥇 1st Place", amount: 3000 },
-            { rank: "🥈 2nd Place", amount: 1500 },
-            { rank: "🥉 3rd Place", amount: 500 }
+            { rank: "1st Place", amount: 3000 },
+            { rank: "2nd Place", amount: 1500 },
+            { rank: "3rd Place", amount: 500 }
         ],
         entry: 0,
         slots: 16,
@@ -176,9 +176,9 @@ const tournamentsData = [
         map: "Crossfire",
         prize: 2000,
         prizeDistribution: [
-            { rank: "🥇 1st Place", amount: 1200 },
-            { rank: "🥈 2nd Place", amount: 500 },
-            { rank: "🥉 3rd Place", amount: 300 }
+            { rank: "1st Place", amount: 1200 },
+            { rank: "2nd Place", amount: 500 },
+            { rank: "3rd Place", amount: 300 }
         ],
         entry: 50,
         slots: 20,
@@ -214,9 +214,9 @@ const tournamentsData = [
         map: "Kalahari",
         prize: 8000,
         prizeDistribution: [
-            { rank: "🥇 1st Place", amount: 5000 },
-            { rank: "🥈 2nd Place", amount: 2000 },
-            { rank: "🥉 3rd Place", amount: 1000 }
+            { rank: "1st Place", amount: 5000 },
+            { rank: "2nd Place", amount: 2000 },
+            { rank: "3rd Place", amount: 1000 }
         ],
         entry: 200,
         slots: 40,
@@ -328,8 +328,8 @@ function formatMinutes(ms) {
 
 function getStatusBadge(status) {
     if (status === 'live') return `<span class="status-badge status-live"><span class="live-dot"></span> LIVE</span>`;
-    if (status === 'upcoming') return `<span class="status-badge status-upcoming">🟡 UPCOMING</span>`;
-    return `<span class="status-badge status-completed">⚫ COMPLETED</span>`;
+    if (status === 'upcoming') return `<span class="status-badge status-upcoming"><svg class="status-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg> UPCOMING</span>`;
+    return `<span class="status-badge status-completed"><svg class="status-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9 12l2 2 4-4"></path></svg> COMPLETED</span>`;
 }
 
 function getJoinButtonHtml(tourney, large = false) {
@@ -379,10 +379,10 @@ function getUrgencyInfo(tourney) {
 
     if (tourney.status === 'upcoming') {
         if (slotsLeft <= 3 && slotsLeft > 0) {
-            urgencyTag = `<span class="urgency-tag urgency-slots">🔥 Only ${slotsLeft} slot${slotsLeft > 1 ? 's' : ''} left!</span>`;
+            urgencyTag = `<span class="urgency-tag urgency-slots"><svg class="urgency-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Only ${slotsLeft} slot${slotsLeft > 1 ? 's' : ''} left!</span>`;
             pulseGlow = true;
         } else if (minutesLeft > 0 && minutesLeft <= 30) {
-            urgencyTag = `<span class="urgency-tag urgency-time">⚡ Starting in ${minutesLeft} min${minutesLeft > 1 ? 's' : ''}!</span>`;
+            urgencyTag = `<span class="urgency-tag urgency-time"><svg class="filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> Starting in ${minutesLeft} min${minutesLeft > 1 ? 's' : ''}!</span>`;
             pulseGlow = minutesLeft <= 10;
         }
     }
@@ -465,10 +465,10 @@ function renderGrid(tournaments) {
 
         let extraBottom = '';
         if (t.status === 'completed' && t.bracket) {
-            extraBottom = `<button class="mini-bracket-btn" onclick="event.stopPropagation(); openBracket(${t.id})">🏆 View Bracket</button>`;
+            extraBottom = `<button class="mini-bracket-btn" onclick="event.stopPropagation(); openBracket(${t.id})"><svg class="action-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10M5 4h14v4a7 7 0 0 1-14 0V4z"></path></svg> View Bracket</button>`;
         }
         if (t.status === 'live') {
-            extraBottom = `<div class="room-teaser">🔴 LIVE — <span onclick="event.stopPropagation(); openModal(${t.id})" style="color:var(--color-primary);cursor:pointer;">View Room Info</span></div>`;
+            extraBottom = `<div class="room-teaser">LIVE — <span onclick="event.stopPropagation(); openModal(${t.id})" style="color:var(--color-primary);cursor:pointer;">View Room Info</span></div>`;
         }
 
         card.innerHTML = `
@@ -520,9 +520,9 @@ function renderHistory() {
     if (!section) return;
 
     const badgeMap = {
-        won: { label: '🥇 Winner', cls: 'badge-won' },
-        top3: { label: '🥉 Top 3', cls: 'badge-top3' },
-        lost: { label: '💀 Eliminated', cls: 'badge-lost' }
+        won: { label: 'Winner', cls: 'badge-won' },
+        top3: { label: 'Top 3', cls: 'badge-top3' },
+        lost: { label: 'Eliminated', cls: 'badge-lost' }
     };
 
     const rows = userHistory.map(h => {
@@ -582,7 +582,7 @@ window.openModal = function (id) {
     if (t.status === 'live' && t.roomId) {
         roomHtml = `
         <div class="room-card">
-            <div class="room-card-title">🔴 LIVE ROOM DETAILS</div>
+            <div class="room-card-title">LIVE ROOM DETAILS</div>
             <div class="room-fields">
                 <div class="room-field">
                     <span class="room-label">Room ID</span>
@@ -638,7 +638,7 @@ window.openModal = function (id) {
                             <span class="invite-code" id="invite-code-val">—</span>
                             <button class="copy-btn" onclick="copyInviteCode()">Copy Link</button>
                         </div>
-                        <button class="invite-gen-btn" id="gen-invite-btn" onclick="generateInviteCode(${t.id})">⚡ Generate Invite Code</button>
+                        <button class="invite-gen-btn" id="gen-invite-btn" onclick="generateInviteCode(${t.id})">Generate Invite Code</button>
                     </div>
                 </div>
             </div>`;
@@ -673,7 +673,7 @@ window.openModal = function (id) {
             <p>${t.rules.replace(/\n/g, '<br>')}</p>
         </div>
         <div class="prize-section">
-            <h4>🏆 Prize Pool — <span style="color:var(--color-secondary)">₹${t.prize.toLocaleString()}</span></h4>
+            <h4>Prize Pool — <span style="color:var(--color-secondary)">₹${t.prize.toLocaleString()}</span></h4>
             <div class="prize-list">${prizeHtml}</div>
         </div>
         ${joinHtml}
@@ -689,7 +689,7 @@ window.openModal = function (id) {
         const el = document.getElementById('modal-countdown');
         const update = () => {
             const rem = t.startTime - Date.now();
-            if (el) el.textContent = rem <= 0 ? '⚡ Starting soon!' : '⏱ Starts in: ' + formatTime(rem);
+            if (el) el.textContent = rem <= 0 ? '<svg class="filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> Starting soon!' : '⏱ Starts in: ' + formatTime(rem);
         };
         update();
         modalCountdownInterval = setInterval(update, 1000);
@@ -803,7 +803,7 @@ window.openBracket = function (id) {
 
     const modal = document.getElementById('bracket-modal');
     document.getElementById('bracket-modal-body').innerHTML = `
-        <h2 class="bracket-title">🏆 ${t.name}</h2>
+        <h2 class="bracket-title">${t.name}</h2>
         <p class="bracket-subtitle">Tournament Bracket</p>
         <div class="bracket-flow">
             <div class="bracket-round">
@@ -827,7 +827,7 @@ window.openBracket = function (id) {
             <div class="bracket-arrow">→</div>
             <div class="bracket-winner-section">
                 <div class="bracket-round-label">Winner</div>
-                <div class="bracket-champion">🏆 ${b.final.winner}</div>
+                <div class="bracket-champion">${b.final.winner}</div>
             </div>
         </div>
     `;

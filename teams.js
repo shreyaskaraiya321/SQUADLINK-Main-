@@ -156,7 +156,7 @@ function checkDailyLogin(user) {
     let users = JSON.parse(localStorage.getItem('squadlink_users')) || [];
     const uIndex = users.findIndex(u => u.email === user.email);
     if(uIndex !== -1) { users[uIndex] = user; localStorage.setItem('squadlink_users', JSON.stringify(users)); }
-    setTimeout(() => toast(`Daily Login: +5 XP! Streak: ${user.streak}🔥`, 'success'), 1000);
+    setTimeout(() => toast(`Daily Login: +5 XP! Streak: ${user.streak}`, 'success'), 1000);
   }
   return user;
 }
@@ -292,7 +292,7 @@ function renderTeams(filter = {}) {
           <span class="team-tag team-tag-region">📍 ${team.region}</span>
           <span class="team-tag team-tag-rank">⭐ ${team.rankRequirement}</span>
           <span class="team-tag team-tag-privacy">${team.privacy === 'public' ? '🌐 Public' : '🔒 Private'}</span>
-          ${autoFill ? '<span class="team-tag team-tag-autofill">⚡ Recruiting</span>' : ''}
+          ${autoFill ? '<span class="team-tag team-tag-autofill"><svg class="filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> Recruiting</span>' : ''}
         </div>
         <div class="member-count">👥 ${team.members.length} member${team.members.length !== 1 ? 's' : ''}</div>
         <div class="team-card-stats">
@@ -674,7 +674,7 @@ function renderPlayers() {
       <div class="player-tags-row">
         <span class="player-tag">📍 ${p.region}</span>
         <span class="player-tag">🎭 ${p.role}</span>
-        <span class="player-tag">⚡ ${p.playstyle}</span>
+        <span class="player-tag"><svg class="filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> ${p.playstyle}</span>
         <span class="player-tag">🎙️ VC: ${p.voiceChat==='yes'?'Yes':'No'}</span>
       </div>
       <div class="player-card-actions">

@@ -1770,3 +1770,41 @@ input,
     box-shadow: var(--shadow-level-2);
     color: var(--text-dark);
 }
+/* ICON STYLES */
+svg {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.filter-icon, .status-icon, .urgency-icon, .action-icon, .prize-icon {
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.filter-icon { color: var(--text-muted); }
+select:focus + .filter-icon, select:hover + .filter-icon { color: var(--color-primary); }
+
+.status-icon { color: inherit; margin-right: 4px; }
+
+.urgency-icon { color: inherit; margin-right: 6px; }
+
+.action-icon { color: inherit; margin-right: 6px; }
+
+.prize-icon { margin-right: 8px; }
+.prize-1 { color: #FFD700; }
+.prize-2 { color: #C0C0C0; }
+.prize-3 { color: #CD7F32; }
+
+
+.custom-select .select-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    z-index: 2;
+}
+.custom-select select {
+    padding-left: 35px !important;
+}
