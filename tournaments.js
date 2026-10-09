@@ -500,8 +500,7 @@ function renderGrid(tournaments) {
         tourneyGrid.appendChild(card);
         if (t.status === 'upcoming') startCountdown(`timer-grid-${t.id}`, t.startTime);
     });
-
-    
+}
 
 // ========== HISTORY SECTION ==========
 function renderHistory() {
