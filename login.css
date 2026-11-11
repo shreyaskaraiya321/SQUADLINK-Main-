@@ -3,6 +3,13 @@
    Source of Truth: Squadlink DESIGN.md (Imperial Obsidian)
    ========================================================================== */
 
+.auth-page,
+.auth-page *,
+.auth-page *::before,
+.auth-page *::after {
+    box-sizing: border-box;
+}
+
 .auth-page {
     min-height: 100vh;
     display: flex;
@@ -49,15 +56,25 @@
 .auth-brand {
     display: inline-flex;
     align-items: center;
+    gap: 10px;
     text-decoration: none;
     border-radius: 4px;
 }
 
 .auth-logo {
-    height: 36px;
+    height: 40px;
     width: auto;
     object-fit: contain;
     display: block;
+}
+
+.auth-brand-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-primary, #EDE8F5);
+    line-height: 1;
 }
 
 .auth-back-link {
@@ -108,7 +125,7 @@
 /* Authentication Panel (Level 1 Surface) */
 .auth-card {
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
     background: var(--color-surface, #14111D);
     border: 1px solid rgba(229, 216, 184, 0.1);
     border-radius: 12px;
@@ -473,7 +490,11 @@
     }
 
     .auth-logo {
-        height: 30px;
+        height: 34px;
+    }
+
+    .auth-brand-name {
+        font-size: 0.9375rem;
     }
 
     .auth-back-link {
@@ -482,7 +503,7 @@
     }
 
     .auth-main {
-        padding: 20px 16px 32px;
+        padding: 24px 16px 32px;
         align-items: flex-start;
     }
 
@@ -496,7 +517,7 @@
     }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 340px) {
     .auth-options {
         flex-direction: column;
         align-items: flex-start;
