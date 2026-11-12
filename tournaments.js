@@ -332,6 +332,21 @@ function getStatusBadge(status) {
     return `<span class="status-badge status-completed"><svg class="status-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9 12l2 2 4-4"></path></svg> COMPLETED</span>`;
 }
 
+// ========== ACTION BUTTON HELPERS ==========
+function getContactHostButtonHtml(tourney, isFeatured = false) {
+    const extraCls = isFeatured ? ' feat-contact-btn' : '';
+    return `
+        <button type="button" class="contact-host-btn${extraCls}" onclick="event.stopPropagation(); openContactModal(${tourney.id})" title="Contact tournament host (${tourney.hostName})">
+            <span class="contact-btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </span>
+            <span>Contact Host</span>
+        </button>
+    `;
+}
+
 function getJoinButtonHtml(tourney, large = false) {
     const cls = large ? 'btn-large' : '';
     if (tourney.status === 'completed') {
@@ -430,7 +445,10 @@ function renderFeatured(tourney) {
                 </div>
                 ${timerHtml}
                 <div id="feat-btn-wrapper" style="width: 100%;">
-                    ${getJoinButtonHtml(tourney, true)}
+                    <div class="feat-actions-row">
+                        ${getJoinButtonHtml(tourney, true)}
+                        ${getContactHostButtonHtml(tourney, true)}
+                    </div>
                 </div>
             </div>
         </div>
@@ -504,7 +522,10 @@ function renderGrid(tournaments) {
                 </div>
                 ${extraBottom}
                 <div id="grid-btn-wrapper-${t.id}">
-                    ${getJoinButtonHtml(t)}
+                    <div class="card-actions-row">
+                        ${getJoinButtonHtml(t)}
+                        ${getContactHostButtonHtml(t, false)}
+                    </div>
                 </div>
             </div>
         `;
@@ -676,6 +697,35 @@ window.openModal = function (id) {
             <h4>Prize Pool — <span style="color:var(--color-secondary)">₹${t.prize.toLocaleString()}</span></h4>
             <div class="prize-list">${prizeHtml}</div>
         </div>
+
+        <!-- Need Help with This Tournament Section -->
+        <div class="modal-help-section">
+            <div class="modal-help-header">
+                <div class="modal-help-title-wrap">
+                    <svg class="modal-help-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <h4 class="modal-help-title">Need Help With This Tournament?</h4>
+                </div>
+                <span class="modal-help-host-badge">${t.hostName}</span>
+            </div>
+            <p class="modal-help-text">Have questions about registration, rules, match timings or anything else? Contact the tournament organizer directly.</p>
+            <div class="modal-help-host-info">
+                <span>Organizer: <strong>${t.organizer}</strong></span>
+                <span>Assigned Host: <strong class="modal-help-host-name">${t.hostName}</strong></span>
+            </div>
+            <button type="button" class="modal-contact-admin-btn" onclick="openContactModal(${t.id})">
+                <span class="contact-btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </span>
+                <span>Contact Tournament Admin</span>
+            </button>
+        </div>
+
         ${joinHtml}
         ${shareHtml}
     `;
@@ -912,11 +962,332 @@ document.getElementById('tourney-modal').addEventListener('click', function (e) 
 document.getElementById('bracket-modal').addEventListener('click', function (e) {
     if (e.target === this) closeBracket();
 });
+const contactModalOverlay = document.getElementById('contact-modal');
+if (contactModalOverlay) {
+    contactModalOverlay.addEventListener('click', function (e) {
+        if (e.target === this) closeContactModal();
+    });
+}
 
 // ESC key
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeModal(); closeBracket(); }
+    if (e.key === 'Escape') {
+        closeModal();
+        closeBracket();
+        closeContactModal();
+    }
 });
+
+// ========== CONTACT HOST & ADMIN SYSTEM ==========
+const CONTACT_QUERIES_KEY = 'squadlink_tournament_queries';
+
+function getStoredQueries() {
+    try {
+        return JSON.parse(localStorage.getItem(CONTACT_QUERIES_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveStoredQuery(record) {
+    const queries = getStoredQueries();
+    queries.push(record);
+    try {
+        localStorage.setItem(CONTACT_QUERIES_KEY, JSON.stringify(queries));
+    } catch (e) {
+        console.warn('Could not persist query to localStorage', e);
+    }
+}
+
+function getCurrentPlayerProfile() {
+    try {
+        const user = JSON.parse(localStorage.getItem('squadlink_currentUser'));
+        if (user && (user.username || user.email)) {
+            return {
+                name: user.username || user.name || '',
+                email: user.email || '',
+                isLoggedIn: true
+            };
+        }
+    } catch (e) {}
+
+    try {
+        const profile = JSON.parse(localStorage.getItem('squadlink_playerProfile'));
+        if (profile && (profile.name || profile.email)) {
+            return {
+                name: profile.name || '',
+                email: profile.email || '',
+                isLoggedIn: false
+            };
+        }
+    } catch (e) {}
+
+    return { name: '', email: '', isLoggedIn: false };
+}
+
+window.openContactModal = function (tourneyId) {
+    const t = tournamentsData.find(x => x.id === tourneyId);
+    if (!t) return;
+
+    const modal = document.getElementById('contact-modal');
+    const body = document.getElementById('contact-modal-body');
+    if (!modal || !body) return;
+
+    const player = getCurrentPlayerProfile();
+
+    // Check if tournament has verified direct channels
+    let directChannelsHtml = '';
+    if (t.contactChannels && Object.keys(t.contactChannels).length > 0) {
+        const channels = [];
+        if (t.contactChannels.discord) {
+            channels.push(`<a class="direct-channel-btn" href="${t.contactChannels.discord}" target="_blank" rel="noopener noreferrer">Discord Server</a>`);
+        }
+        if (t.contactChannels.whatsapp) {
+            channels.push(`<a class="direct-channel-btn" href="${t.contactChannels.whatsapp}" target="_blank" rel="noopener noreferrer">WhatsApp Helpdesk</a>`);
+        }
+        if (t.contactChannels.email) {
+            channels.push(`<a class="direct-channel-btn" href="mailto:${t.contactChannels.email}">Email (${t.contactChannels.email})</a>`);
+        }
+        if (channels.length > 0) {
+            directChannelsHtml = `
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-primary); letter-spacing: 0.06em; margin-bottom: 6px; font-weight: 600;">Official Support Channels</div>
+                    <div class="contact-direct-channels">
+                        ${channels.join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    body.innerHTML = `
+        <div class="contact-dialog-header">
+            <p class="contact-dialog-eyebrow">Tournament Support Desk</p>
+            <h3 class="contact-dialog-title" id="contact-modal-title">Contact Host & Admin</h3>
+            <p class="contact-dialog-subtitle">Send a direct inquiry to the verified organizer and assigned host for this tournament.</p>
+        </div>
+
+        <div class="contact-meta-cards">
+            <div class="contact-meta-card">
+                <span class="contact-meta-card-label">Tournament</span>
+                <span class="contact-meta-card-value" title="${t.name}">${t.name}</span>
+            </div>
+            <div class="contact-meta-card">
+                <span class="contact-meta-card-label">Assigned Host</span>
+                <span class="contact-meta-card-value highlight">${t.hostName}</span>
+            </div>
+        </div>
+
+        ${directChannelsHtml}
+
+        <form class="contact-form" id="contact-host-form" onsubmit="handleContactSubmit(event, ${t.id})" novalidate>
+            <div class="contact-form-row">
+                <div class="contact-form-group">
+                    <label class="contact-label" for="contact-name">
+                        Player Name <span class="contact-label-subtext">${player.isLoggedIn ? '(from profile)' : '*'}</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="contact-name" 
+                        class="contact-input" 
+                        placeholder="e.g. ShadowViper" 
+                        value="${player.name || ''}" 
+                        required 
+                        autocomplete="name"
+                    />
+                    <span class="contact-field-error" id="contact-name-error"></span>
+                </div>
+                <div class="contact-form-group">
+                    <label class="contact-label" for="contact-email">
+                        Email Address <span class="contact-label-subtext">${player.isLoggedIn ? '(from profile)' : '*'}</span>
+                    </label>
+                    <input 
+                        type="email" 
+                        id="contact-email" 
+                        class="contact-input" 
+                        placeholder="yourname@gmail.com" 
+                        value="${player.email || ''}" 
+                        required 
+                        autocomplete="email"
+                    />
+                    <span class="contact-field-error" id="contact-email-error"></span>
+                </div>
+            </div>
+
+            <div class="contact-form-group">
+                <label class="contact-label" for="contact-category">
+                    Query Category <span class="contact-label-subtext">*</span>
+                </label>
+                <select id="contact-category" class="contact-select" required>
+                    <option value="" disabled selected>Select category...</option>
+                    <option value="Registration">Registration & Slot Confirmation</option>
+                    <option value="Payment">Payment & Entry Fee</option>
+                    <option value="Rules and Eligibility">Rules and Eligibility</option>
+                    <option value="Match Schedule">Match Schedule & Timings</option>
+                    <option value="Technical Issues">Technical & Room ID/Password Issues</option>
+                    <option value="Other">Other Inquiry</option>
+                </select>
+                <span class="contact-field-error" id="contact-category-error"></span>
+            </div>
+
+            <div class="contact-form-group">
+                <label class="contact-label" for="contact-message">
+                    Message <span class="contact-label-subtext">*</span>
+                </label>
+                <textarea 
+                    id="contact-message" 
+                    class="contact-textarea" 
+                    rows="4" 
+                    placeholder="Provide details about your question, team name (if applicable), or the issue you are experiencing..." 
+                    required
+                ></textarea>
+                <span class="contact-field-error" id="contact-message-error"></span>
+            </div>
+
+            <div class="contact-notice-box">
+                <svg class="contact-notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>
+                    Queries are dispatched to <strong>${t.hostName}</strong> (${t.organizer}). You will receive updates at your provided email. Squadlink preserves administrative privacy and does not expose direct private phone lines.
+                </span>
+            </div>
+
+            <button type="submit" class="contact-submit-btn" id="contact-submit-btn">
+                <span>Submit Query</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+    `;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeContactModal = function () {
+    const modal = document.getElementById('contact-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        // If main tourney modal isn't open, restore scroll
+        const tourneyModal = document.getElementById('tourney-modal');
+        if (!tourneyModal || !tourneyModal.classList.contains('active')) {
+            document.body.style.overflow = '';
+        }
+    }
+};
+
+window.handleContactSubmit = function (event, tourneyId) {
+    event.preventDefault();
+
+    const t = tournamentsData.find(x => x.id === tourneyId);
+    if (!t) return;
+
+    const nameInput = document.getElementById('contact-name');
+    const emailInput = document.getElementById('contact-email');
+    const categorySelect = document.getElementById('contact-category');
+    const messageInput = document.getElementById('contact-message');
+    const submitBtn = document.getElementById('contact-submit-btn');
+
+    const nameError = document.getElementById('contact-name-error');
+    const emailError = document.getElementById('contact-email-error');
+    const categoryError = document.getElementById('contact-category-error');
+    const messageError = document.getElementById('contact-message-error');
+
+    // Reset errors
+    [nameInput, emailInput, categorySelect, messageInput].forEach(el => el && el.classList.remove('is-error'));
+    [nameError, emailError, categoryError, messageError].forEach(el => { if (el) el.textContent = ''; });
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim() : '';
+    const category = categorySelect ? categorySelect.value : '';
+    const message = messageInput ? messageInput.value.trim() : '';
+
+    let isValid = true;
+
+    if (!name || name.length < 2) {
+        nameInput.classList.add('is-error');
+        nameError.textContent = 'Please enter your name or gamer tag (at least 2 characters).';
+        isValid = false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+        emailInput.classList.add('is-error');
+        emailError.textContent = 'Please provide a valid email address.';
+        isValid = false;
+    }
+
+    if (!category) {
+        categorySelect.classList.add('is-error');
+        categoryError.textContent = 'Please choose a query category.';
+        isValid = false;
+    }
+
+    if (!message || message.length < 10) {
+        messageInput.classList.add('is-error');
+        messageError.textContent = 'Please describe your query in at least 10 characters.';
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
+    // Prevent accidental duplicate submissions
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span>Transmitting Query...</span>`;
+
+    const ticketId = 'SLQ-' + Math.floor(100000 + Math.random() * 900000);
+    const queryRecord = {
+        ticketId,
+        tournamentId: t.id,
+        tournamentName: t.name,
+        hostName: t.hostName,
+        organizer: t.organizer,
+        playerName: name,
+        playerEmail: email,
+        category,
+        message,
+        createdAt: new Date().toISOString()
+    };
+
+    // Save record to client storage
+    saveStoredQuery(queryRecord);
+
+    setTimeout(() => {
+        const body = document.getElementById('contact-modal-body');
+        if (!body) return;
+
+        body.innerHTML = `
+            <div class="contact-success-panel">
+                <div class="contact-success-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h3 class="contact-success-title">Query Submitted Successfully</h3>
+                <p class="contact-success-desc">
+                    Your inquiry has been routed to <strong>${t.hostName}</strong> (${t.organizer}). A notification has been logged for this tournament's administrative queue.
+                </p>
+                <div class="contact-success-meta">
+                    <div><strong>Reference Ticket:</strong> ${ticketId}</div>
+                    <div><strong>Tournament:</strong> ${t.name}</div>
+                    <div><strong>Assigned Host:</strong> ${t.hostName}</div>
+                    <div><strong>Category:</strong> ${category}</div>
+                    <div><strong>Response Channel:</strong> ${email}</div>
+                </div>
+                <button type="button" class="contact-success-done-btn" onclick="closeContactModal()">
+                    Done
+                </button>
+            </div>
+        `;
+
+        showToast(`✔ Support ticket ${ticketId} created for ${t.hostName}`);
+    }, 500);
+};
 
 // INITIAL RENDER
 document.addEventListener('DOMContentLoaded', () => {
