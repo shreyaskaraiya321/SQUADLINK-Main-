@@ -640,70 +640,185 @@ function renderPlayers() {
   if (filterRole) players = players.filter(p => p.role === filterRole);
 
   players = players.map(p => ({ ...p, score: matchScore(p, profile) })).sort((a, b) => b.score - a.score);
-  document.getElementById('match-count-label').textContent = `${players.length} player${players.length!==1?'s':''} found`;
+  const countLabel = document.getElementById('match-count-label');
+  if (countLabel) {
+    countLabel.textContent = `${players.length} player${players.length !== 1 ? 's' : ''} available`;
+  }
 
   const grid = document.getElementById('players-grid');
   grid.innerHTML = '';
+
+  if (!players.length) {
+    grid.innerHTML = `
+      <div class="empty-players-state">
+        <div class="empty-players-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+        </div>
+        <h4 class="empty-players-title">No matching players found</h4>
+        <p class="empty-players-sub">Try broadening your match filters or select All Games / All Roles.</p>
+        <button type="button" class="cta-btn secondary-btn" onclick="resetMatchFilters()">Reset Filters</button>
+      </div>
+    `;
+    updateProfileCard();
+    return;
+  }
+
   players.forEach(p => {
     const isBest = p.score >= 80;
-    const isRole = profile && p.role === (STORE.teams.find(t=>t.requiredRoles.includes(p.role))?.requiredRoles[0]);
+    const isOnline = !!p.online;
     const card = document.createElement('div');
     card.className = 'player-card';
+
+    // Highlight score badge
+    const scoreBadgeClass = p.score >= 80 ? 'score-high' : (p.score >= 60 ? 'score-mid' : 'score-low');
+
     card.innerHTML = `
-      <div class="player-card-top">
-        <div class="player-avatar">${p.username[0]}</div>
-        <div class="player-name-wrap">
-          <div class="player-name">${p.username}</div>
-          <div class="player-game">${p.game}</div>
+      <div class="player-card-header">
+        <div class="player-avatar-wrap">
+          <div class="player-avatar">${p.username[0]}</div>
+          <span class="player-status-dot ${isOnline ? 'online' : 'offline'}" title="${isOnline ? 'Online now' : 'Offline'}"></span>
         </div>
-        <div class="player-match-tags">
-          ${isBest ? '<span class="match-tag match-tag-best">★ Best Match</span>' : ''}
-          ${p.role === (profile?.role) ? '<span class="match-tag match-tag-role">Role Match</span>' : ''}
-          ${p.online ? '<span class="match-tag match-tag-online">Online</span>' : ''}
+        <div class="player-info-meta">
+          <div class="player-name-row">
+            <h4 class="player-name" title="${p.username}">${p.username}</h4>
+            <span class="player-presence-text ${isOnline ? 'online' : 'offline'}">${isOnline ? 'Online' : 'Offline'}</span>
+          </div>
+          <div class="player-game-row">
+            <span class="player-primary-game">${p.game}</span>
+            <span class="player-meta-bullet">•</span>
+            <span class="player-meta-role">${p.role}</span>
+          </div>
         </div>
       </div>
-      <div class="player-stats">
-        <div class="player-stat"><span class="player-stat-val">${p.kd}</span><span class="player-stat-label">K/D</span></div>
-        <div class="player-stat"><span class="player-stat-val">${p.winRate}%</span><span class="player-stat-label">Win %</span></div>
-        <div class="player-stat"><span class="player-stat-val">${p.rank}</span><span class="player-stat-label">Rank</span></div>
+
+      <div class="player-stats-compact">
+        <div class="player-stat-col">
+          <span class="player-stat-val">${p.kd.toFixed(1)}</span>
+          <span class="player-stat-label">K/D</span>
+        </div>
+        <div class="player-stat-divider"></div>
+        <div class="player-stat-col">
+          <span class="player-stat-val">${p.winRate}%</span>
+          <span class="player-stat-label">Win Rate</span>
+        </div>
+        <div class="player-stat-divider"></div>
+        <div class="player-stat-col">
+          <span class="player-stat-val" title="${p.rank}">${p.rank}</span>
+          <span class="player-stat-label">Rank</span>
+        </div>
       </div>
-      <div class="match-score-bar">
-        <div class="match-score-bar-label"><span>Match Score</span><span>${p.score}%</span></div>
-        <div class="match-score-track"><div class="match-score-fill" style="width:${p.score}%"></div></div>
+
+      <div class="player-compat-row">
+        <div class="compat-label-wrap">
+          <span class="compat-title">Match Compatibility</span>
+          <span class="compat-score-pill ${scoreBadgeClass}">${p.score}% ${isBest ? 'Match' : ''}</span>
+        </div>
+        <div class="compat-track">
+          <div class="compat-fill ${scoreBadgeClass}" style="width: ${p.score}%;"></div>
+        </div>
       </div>
-      <div class="player-tags-row">
-        <span class="player-tag">📍 ${p.region}</span>
-        <span class="player-tag">🎭 ${p.role}</span>
-        <span class="player-tag"><svg class="filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> ${p.playstyle}</span>
-        <span class="player-tag">🎙️ VC: ${p.voiceChat==='yes'?'Yes':'No'}</span>
+
+      <div class="player-prefs-bar">
+        <span class="pref-badge" title="Region: ${p.region}">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          ${p.region}
+        </span>
+        <span class="pref-badge" title="Playstyle: ${p.playstyle}">${p.playstyle}</span>
+        <span class="pref-badge ${p.voiceChat === 'yes' ? 'pref-vc-yes' : 'pref-vc-no'}" title="Voice Comms: ${p.voiceChat === 'yes' ? 'Available' : 'No VC'}">
+          ${p.voiceChat === 'yes' ? 'Mic Active' : 'No Voice'}
+        </span>
       </div>
+
       <div class="player-card-actions">
-        <button class="cta-btn primary-btn send-invite-player-btn" data-pid="${p.id}">📨 Send Invite</button>
-      </div>`;
-    card.querySelector('.send-invite-player-btn').addEventListener('click', () => {
-      const myTeams = STORE.teams.filter(t => t.leaderId === (JSON.parse(localStorage.getItem('squadlink_currentUser')||'null')?.id||'current_user'));
-      if (!myTeams.length) { toast('Create or lead a team first to invite players', 'warn'); return; }
+        <button type="button" class="cta-btn primary-btn send-invite-player-btn" data-pid="${p.id}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          <span>Send Invite</span>
+        </button>
+      </div>
+    `;
+
+    card.querySelector('.send-invite-player-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const myTeams = STORE.teams.filter(t => t.leaderId === (JSON.parse(localStorage.getItem('squadlink_currentUser') || 'null')?.id || 'current_user'));
+      if (!myTeams.length) {
+        toast('Create or lead a team first to invite teammates', 'warn');
+        return;
+      }
       sendInvite(p.id, myTeams[0].id);
     });
+
     grid.appendChild(card);
   });
+
   updateProfileCard();
 }
+
+window.resetMatchFilters = function() {
+  document.getElementById('match-filter-game').value = '';
+  document.getElementById('match-filter-region').value = '';
+  document.getElementById('match-filter-role').value = '';
+  renderPlayers();
+  toast('Filters reset', 'info');
+};
 
 function updateProfileCard() {
   const p = STORE.profile;
   const user = JSON.parse(localStorage.getItem('squadlink_currentUser') || 'null');
-  document.getElementById('profile-username-display').textContent = user?.username || 'Anonymous';
-  document.getElementById('profile-avatar-display').textContent = (user?.username || 'A')[0].toUpperCase();
-  if (p) {
-    document.getElementById('profile-game-tag-display').textContent = `${p.game || '—'} · ${p.rank || '—'}`;
-    document.getElementById('ps-kd').textContent = p.kd || '—';
-    document.getElementById('ps-wr').textContent = p.winRate ? p.winRate+'%' : '—';
+  const usernameDisplay = document.getElementById('profile-username-display');
+  const avatarDisplay = document.getElementById('profile-avatar-display');
+  const gameTagDisplay = document.getElementById('profile-game-tag-display');
+  const completionVal = document.getElementById('profile-completion-val');
+  const completionFill = document.getElementById('profile-completion-fill');
+
+  if (usernameDisplay) usernameDisplay.textContent = user?.username || 'Guest Player';
+  if (avatarDisplay) avatarDisplay.textContent = (user?.username || 'G')[0].toUpperCase();
+
+  if (p && p.game) {
+    if (gameTagDisplay) gameTagDisplay.textContent = `${p.game} • ${p.role || 'Player'}`;
+    document.getElementById('ps-kd').textContent = p.kd ? p.kd.toFixed(1) : '—';
+    document.getElementById('ps-wr').textContent = p.winRate ? p.winRate + '%' : '—';
     document.getElementById('ps-rank').textContent = p.rank || '—';
+
+    // Calculate completeness
+    let filled = 0;
+    const fields = [p.game, p.rank, p.role, p.playstyle, p.region, p.kd, p.winRate];
+    fields.forEach(f => { if (f) filled++; });
+    const pct = Math.round((filled / fields.length) * 100);
+
+    if (completionVal) {
+      completionVal.textContent = pct === 100 ? 'Complete' : `${pct}% Setup`;
+      completionVal.style.color = pct === 100 ? 'var(--color-primary)' : 'var(--text-muted)';
+    }
+    if (completionFill) {
+      completionFill.style.width = `${pct}%`;
+      completionFill.style.background = pct === 100 ? 'var(--color-primary)' : 'linear-gradient(90deg, var(--color-secondary), var(--color-primary))';
+    }
+
     const tags = document.getElementById('profile-tags-display');
-    tags.innerHTML = [p.role, p.region, p.playstyle, p.voiceChat==='yes'?'🎙️ VC':'🔇 No VC'].filter(Boolean).map(t => `<span class="profile-tag">${t}</span>`).join('');
+    if (tags) {
+      const items = [p.region, p.playstyle, p.voiceChat === 'yes' ? 'Mic Available' : 'No VC'].filter(Boolean);
+      tags.innerHTML = items.map(t => `<span class="profile-tag">${t}</span>`).join('');
+    }
   } else {
-    document.getElementById('profile-game-tag-display').textContent = 'Profile incomplete';
+    if (gameTagDisplay) gameTagDisplay.textContent = 'Profile Incomplete';
+    if (completionVal) {
+      completionVal.textContent = 'Needs Setup';
+      completionVal.style.color = '#ffb4ab';
+    }
+    if (completionFill) {
+      completionFill.style.width = '20%';
+      completionFill.style.background = 'rgba(255, 180, 171, 0.4)';
+    }
+    const tags = document.getElementById('profile-tags-display');
+    if (tags) {
+      tags.innerHTML = `<span class="profile-tag-hint">Click Edit Profile to get calibrated teammate matches.</span>`;
+    }
   }
 }
 
@@ -920,6 +1035,7 @@ function initModals() {
   document.getElementById('myteams-empty-browse').addEventListener('click', () => { document.querySelector('[data-tab="browse"]').click(); });
   document.getElementById('tp-manage-btn').addEventListener('click', () => clickTPTab('manage'));
   document.getElementById('refresh-matches-btn').addEventListener('click', renderPlayers);
+  document.getElementById('match-reset-btn')?.addEventListener('click', resetMatchFilters);
 
   // Close buttons
   document.getElementById('close-team-profile').addEventListener('click', () => closeModal('team-profile-modal'));
