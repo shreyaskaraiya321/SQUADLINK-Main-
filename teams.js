@@ -260,6 +260,15 @@ function renderLeaderboard() {
   `).join('') || '<div style="color:#aaa;text-align:center;">No squads yet.</div>';
 }
 
+function getInitials(name) {
+  if (!name) return 'SL';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
 // ========== RENDER TEAMS ==========
 function renderTeams(filter = {}) {
   const grid = document.getElementById('teams-grid');
@@ -275,39 +284,87 @@ function renderTeams(filter = {}) {
   empty.classList.add('hidden');
   teams.forEach(team => {
     const wr = team.stats.matchesPlayed ? Math.round((team.stats.wins / team.stats.matchesPlayed) * 100) : 0;
-    const autoFill = team.requiredRoles.length > 0;
+    const isRecruiting = team.requiredRoles && team.requiredRoles.length > 0;
     const card = document.createElement('div');
     card.className = 'team-card';
+    
+    // Clean initials avatar or uploaded logo
+    const logoHtml = team.logoData 
+      ? `<img src="${team.logoData}" alt="${team.name}">`
+      : `<span class="team-initials">${getInitials(team.name)}</span>`;
+
     card.innerHTML = `
-      <div class="team-card-banner" style="background:linear-gradient(135deg,${gameColor(team.game)}20,var(--color-surface))"></div>
       <div class="team-card-body">
         <div class="team-card-header">
-          <div class="team-card-logo">${team.logo || '🎮'}</div>
+          <div class="team-card-logo">${logoHtml}</div>
           <div class="team-card-info">
-            <div class="team-card-name">${team.name}</div>
-            <div class="team-card-game">${team.game}</div>
+            <h3 class="team-card-name" title="${team.name}">${team.name}</h3>
+            <div class="team-card-sub">
+              <span class="team-card-game">${team.game}</span>
+              <span class="team-card-bullet">•</span>
+              <span class="team-card-members">${team.members.length} player${team.members.length !== 1 ? 's' : ''}</span>
+            </div>
           </div>
         </div>
-        <div class="team-card-tags">
-          <span class="team-tag team-tag-region">📍 ${team.region}</span>
-          <span class="team-tag team-tag-rank">⭐ ${team.rankRequirement}</span>
-          <span class="team-tag team-tag-privacy">${team.privacy === 'public' ? '🌐 Public' : '🔒 Private'}</span>
-          ${autoFill ? '<span class="team-tag team-tag-autofill"><svg class="filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> Recruiting</span>' : ''}
+
+        <div class="team-card-meta">
+          <div class="team-meta-item">
+            <span class="meta-label">Region</span>
+            <span class="meta-val">${team.region}</span>
+          </div>
+          <div class="team-meta-item">
+            <span class="meta-label">Rank</span>
+            <span class="meta-val">${team.rankRequirement}</span>
+          </div>
+          <div class="team-meta-item">
+            <span class="meta-label">Access</span>
+            <span class="meta-val">${team.privacy === 'public' ? 'Public' : 'Private'}</span>
+          </div>
+          <div class="team-meta-item ${isRecruiting ? 'recruiting-active' : ''}">
+            <span class="meta-label">Status</span>
+            <span class="meta-val">${isRecruiting ? 'Recruiting' : 'Roster Full'}</span>
+          </div>
         </div>
-        <div class="member-count">👥 ${team.members.length} member${team.members.length !== 1 ? 's' : ''}</div>
+
         <div class="team-card-stats">
-          <div class="tc-stat"><span class="tc-stat-val">${team.stats.matchesPlayed}</span><span class="tc-stat-label">Matches</span></div>
-          <div class="tc-stat"><span class="tc-stat-val">${team.stats.wins}</span><span class="tc-stat-label">Wins</span></div>
-          <div class="tc-stat"><span class="tc-stat-val">${wr}%</span><span class="tc-stat-label">Win %</span></div>
+          <div class="tc-stat">
+            <span class="tc-stat-val">${team.stats.matchesPlayed}</span>
+            <span class="tc-stat-label">Matches</span>
+          </div>
+          <div class="tc-stat-divider"></div>
+          <div class="tc-stat">
+            <span class="tc-stat-val">${team.stats.wins}</span>
+            <span class="tc-stat-label">Wins</span>
+          </div>
+          <div class="tc-stat-divider"></div>
+          <div class="tc-stat">
+            <span class="tc-stat-val">${wr}%</span>
+            <span class="tc-stat-label">Win Rate</span>
+          </div>
         </div>
-        ${team.requiredRoles.length ? `<div class="team-card-roles">${team.requiredRoles.map(r=>`<span class="role-pill">${r}</span>`).join('')}</div>` : ''}
+
+        <div class="team-card-roles-section">
+          <span class="roles-label">Roles Needed</span>
+          <div class="team-card-roles">
+            ${isRecruiting 
+              ? team.requiredRoles.map(r => `<span class="role-pill">${r}</span>`).join('') 
+              : `<span class="role-none-text">No active role openings</span>`}
+          </div>
+        </div>
+
         <div class="team-card-footer">
-          <button class="cta-btn secondary-btn view-team-btn" data-id="${team.id}">View</button>
-          <button class="cta-btn primary-btn join-team-btn" data-id="${team.id}">Join Team</button>
+          <button type="button" class="cta-btn secondary-btn view-team-btn" data-id="${team.id}">View</button>
+          <button type="button" class="cta-btn primary-btn join-team-btn" data-id="${team.id}">Join Team</button>
         </div>
       </div>`;
-    card.querySelector('.view-team-btn').addEventListener('click', () => openTeamProfile(team.id));
-    card.querySelector('.join-team-btn').addEventListener('click', () => sendJoinRequest(team.id));
+    card.querySelector('.view-team-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openTeamProfile(team.id);
+    });
+    card.querySelector('.join-team-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      sendJoinRequest(team.id);
+    });
     grid.appendChild(card);
   });
 }
