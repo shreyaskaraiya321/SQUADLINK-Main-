@@ -1108,68 +1108,250 @@ input,
     cursor: pointer;
 }
 
-/* ========== CTA SECTION ========== */
-.cta-section {
-    padding: 120px 0;
-    background: linear-gradient(180deg, var(--color-surface), var(--color-bg-base));
+/* ========== THE SQUADLINK MANIFESTO SECTION ========== */
+.manifesto-section {
     position: relative;
+    padding: 150px 0 130px;
+    background: radial-gradient(ellipse 90% 70% at 50% 50%, #161222 0%, #0D0B12 85%);
+    overflow: hidden;
+    border-top: 1px solid rgba(229, 216, 184, 0.08);
+    border-bottom: 1px solid rgba(229, 216, 184, 0.06);
+}
+
+.manifesto-backdrop {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
     overflow: hidden;
 }
 
-.cta-content {
-    text-align: center;
+.manifesto-ambient-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px;
+    height: 520px;
+    background: radial-gradient(circle, rgba(123, 82, 171, 0.16) 0%, rgba(229, 216, 184, 0.05) 45%, transparent 70%);
+    filter: blur(60px);
+    opacity: 0.9;
+}
+
+.manifesto-geometry {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1000px;
+    height: 1000px;
+    opacity: 0.22;
+}
+
+.manifesto-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(229, 216, 184, 0.15);
+}
+
+.manifesto-ring-outer {
+    width: 680px;
+    height: 680px;
+    border: 1px dashed rgba(123, 82, 171, 0.25);
+}
+
+.manifesto-ring-inner {
+    width: 440px;
+    height: 440px;
+    border: 1px solid rgba(229, 216, 184, 0.18);
+}
+
+.manifesto-axis-x {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 820px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(229, 216, 184, 0.2) 20%, rgba(229, 216, 184, 0.3) 50%, rgba(229, 216, 184, 0.2) 80%, transparent 100%);
+}
+
+.manifesto-content {
     position: relative;
-    z-index: 10;
+    z-index: 2;
+    text-align: center;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-.cta-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 30px;
+.manifesto-eyebrow {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
     color: var(--color-primary);
-    animation: ctaIconFloat 3s ease-in-out infinite, ctaIconGlow 2s ease-in-out infinite;
+    margin-bottom: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
 }
 
-@keyframes ctaIconFloat {
-
-    0%,
-    100% {
-        transform: translateY(0) rotate(0deg);
-    }
-
-    50% {
-        transform: translateY(-15px) rotate(5deg);
-    }
+.manifesto-eyebrow::before,
+.manifesto-eyebrow::after {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(229, 216, 184, 0.6));
 }
 
-@keyframes ctaIconGlow {
-
-    0%,
-    100% {
-        filter: drop-shadow(0 0 20px rgba(229, 216, 184, 0.5));
-    }
-
-    50% {
-        filter: drop-shadow(0 0 40px rgba(123, 82, 171, 0.5));
-    }
+.manifesto-eyebrow::after {
+    background: linear-gradient(90deg, rgba(229, 216, 184, 0.6), transparent);
 }
 
-.cta-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    background: var(--gradient-primary);
+.manifesto-headline {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: clamp(2.4rem, 5.2vw, 4.25rem);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.025em;
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.manifesto-headline-primary {
+    color: #F8F5EE;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+}
+
+.manifesto-headline-secondary {
+    color: #CBB4EB;
+    background: linear-gradient(135deg, #E5D8B8 0%, #D8C3F6 35%, #9D71D0 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 20px;
+    text-shadow: none;
 }
 
-.cta-description {
-    color: var(--text-muted);
-    font-size: 1.2rem;
-    max-width: 600px;
+.manifesto-body {
+    font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+    font-weight: 400;
+    line-height: 1.75;
+    color: #A9A2B6;
+    max-width: 660px;
     margin: 0 auto 40px;
-    line-height: 1.7;
+    letter-spacing: 0.005em;
+}
+
+.manifesto-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 0 auto 36px;
+    max-width: 240px;
+}
+
+.manifesto-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(229, 216, 184, 0.35));
+}
+
+.manifesto-divider .manifesto-divider-line:last-child {
+    background: linear-gradient(90deg, rgba(229, 216, 184, 0.35), transparent);
+}
+
+.manifesto-divider-diamond {
+    width: 6px;
+    height: 6px;
+    background: var(--color-primary);
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px rgba(229, 216, 184, 0.5);
+}
+
+.manifesto-closing {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: clamp(0.95rem, 1.4vw, 1.125rem);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #F0ECF6;
+    margin-bottom: 22px;
+}
+
+.manifesto-signature-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+.manifesto-signature {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(229, 216, 184, 0.42);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    border: 1px solid rgba(229, 216, 184, 0.12);
+    background: rgba(20, 17, 29, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+@media (max-width: 768px) {
+    .manifesto-section {
+        padding: 90px 0 80px;
+    }
+
+    .manifesto-geometry {
+        width: 600px;
+        height: 600px;
+        opacity: 0.15;
+    }
+
+    .manifesto-ring-outer {
+        width: 420px;
+        height: 420px;
+    }
+
+    .manifesto-ring-inner {
+        width: 280px;
+        height: 280px;
+    }
+
+    .manifesto-axis-x {
+        width: 480px;
+    }
+
+    .manifesto-eyebrow {
+        letter-spacing: 0.16em;
+        white-space: nowrap;
+    }
+
+    .manifesto-body {
+        margin-bottom: 32px;
+    }
+
+    .manifesto-divider {
+        margin-bottom: 28px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .manifesto-ambient-glow {
+        filter: blur(40px);
+    }
 }
 
 /* ========== FOOTER ========== */
@@ -1817,23 +1999,6 @@ input,
     transition: all 0.3s ease;
     display: inline-block;
 }
-.move-up-btn {
-    background: transparent;
-    border: 1px solid var(--color-secondary);
-    color: var(--color-secondary);
-    padding: 8px 20px;
-    font-size: 0.85rem;
-    border-radius: 4px;
-    transition: all 0.3s var(--ease-smooth);
-    font-family: 'Space Grotesk', sans-serif;
-    margin-top: 5px;
-}
-.move-up-btn:hover {
-    background: rgba(123, 82, 171, 0.1);
-    box-shadow: none;
-    transform: scale(1.05);
-}
-
 /* 4. Micro Interaction Enhancements */
 .stat-card:hover {
     transform: translateY(-8px) scale(1.02);
