@@ -237,16 +237,19 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 24px;
+    align-items: stretch;
 }
 .team-card {
     background: var(--color-surface);
-    
     border-radius: 16px;
     border: 1px solid rgba(229, 216, 184, 0.12);
     overflow: hidden;
     transition: all 0.3s var(--ease-smooth);
     cursor: pointer;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 .team-card::before {
     content: ''; position: absolute; inset: 0;
@@ -258,12 +261,18 @@
 .team-card-banner {
     height: 90px; position: relative; overflow: hidden;
     background: linear-gradient(135deg, var(--color-bg-base), var(--color-surface));
+    flex-shrink: 0;
 }
 .team-card-banner::after {
     content: ''; position: absolute; inset: 0;
     background: linear-gradient(to bottom, transparent, rgba(20, 17, 29, 0.8));
 }
-.team-card-body { padding: 16px 20px 20px; }
+.team-card-body {
+    padding: 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
 .team-card-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; margin-top: -28px; position: relative; z-index: 2; }
 .team-card-logo {
     width: 54px; height: 54px; border-radius: 12px;
@@ -302,8 +311,51 @@
     font-size: 0.72rem; background: rgba(123, 82, 171, 0.1); color: var(--color-secondary);
     border: 1px solid rgba(123, 82, 171, 0.25);
 }
-.team-card-footer { display: flex; gap: 10px; }
-.team-card-footer .cta-btn { flex: 1; padding: 10px 14px; font-size: 0.82rem; text-align: center; }
+.team-card-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 14px;
+}
+.team-card-footer .cta-btn {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    height: 42px;
+    padding: 0 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+.team-card-footer .primary-btn {
+    background: var(--color-primary);
+    color: #0D0B12;
+    border: 1px solid var(--color-primary);
+}
+.team-card-footer .primary-btn:hover {
+    background: var(--color-primary-hover, #F3EBDD);
+    border-color: var(--color-primary-hover, #F3EBDD);
+    color: #0D0B12;
+    transform: none;
+    box-shadow: 0 4px 14px rgba(229, 216, 184, 0.25);
+}
+.team-card-footer .secondary-btn {
+    background: transparent;
+    border: 1px solid var(--color-secondary);
+    color: #EDE8F5;
+}
+.team-card-footer .secondary-btn:hover {
+    background: rgba(123, 82, 171, 0.16);
+    border-color: #9D71D0;
+    color: #FFF4DE;
+    transform: none;
+    box-shadow: 0 4px 14px rgba(123, 82, 171, 0.25);
+}
 .member-count { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-bottom: 14px; }
 
 /* ========== MY TEAMS ========== */
