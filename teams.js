@@ -491,7 +491,9 @@ function openTeamProfile(id) {
   const currXp = (team.xp || 0) % 100;
   document.getElementById('tp-xp-text').textContent = `${currXp} / 100`;
   document.getElementById('tp-xp-fill').style.width = `${currXp}%`;
-  document.getElementById('tp-logo').innerHTML = team.logoData ? `<img src="${team.logoData}" alt="logo">` : team.logo || '🎮';
+  document.getElementById('tp-logo').innerHTML = (team.logoData && (team.logoData.startsWith('data:') || team.logoData.startsWith('http')))
+    ? `<img src="${team.logoData}" alt="${team.name}">`
+    : `<span class="team-initials">${getInitials(team.name)}</span>`;
   document.getElementById('tp-hero-bg').style.background = `linear-gradient(135deg,${gameColor(team.game)}15,var(--color-bg-base))`;
   document.getElementById('tps-matches').textContent = team.stats.matchesPlayed;
   document.getElementById('tps-wins').textContent = team.stats.wins;
@@ -1185,6 +1187,16 @@ function initModals() {
   });
 }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // ========== SEARCH & FILTERS ==========
 function getCurrentBrowseFilters() {
   return {
@@ -1232,7 +1244,7 @@ function updateActiveFilterBadges(filters) {
 
   container.innerHTML = chips.map(c => `
     <span class="active-filter-chip" data-key="${c.key}">
-      <span class="active-filter-chip-label">${c.label}:</span> ${escapeHTML(c.val)}
+      <span class="active-filter-chip-label">${c.label}:</span> ${escapeHtml(c.val)}
       <button type="button" class="active-filter-remove" data-key="${c.key}" aria-label="Remove ${c.label} filter">&times;</button>
     </span>
   `).join('');
