@@ -35,8 +35,8 @@
     <!-- Navigation -->
     <header class="navbar">
         <div class="nav-container">
-            <a href="SL.html" class="logo" style="text-decoration: none; display: flex; align-items: center;">
-                <img src="squadlink_logo.png" alt="Squadlink" style="height: 45px; width: auto; object-fit: contain;">
+            <a href="SL.html" class="logo nav-logo" aria-label="Squadlink Home">
+                <img src="squadlink_logo.png" alt="Squadlink" class="nav-logo-img">
             </a>
             <nav class="nav-links">
                 <a href="SL.html" class="nav-link">Home</a>
@@ -44,19 +44,21 @@
                 <a href="teams.html" class="nav-link active">Teams</a>
                 <a href="SL.html#about" class="nav-link">About</a>
             </nav>
-            <div class="nav-actions" style="display:flex;align-items:center;gap:15px">
-                <div class="notifications-wrapper" style="position:relative">
-                    <button id="nav-notif-btn" style="background:transparent;border:none;color:white;cursor:pointer;position:relative">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                        <span id="nav-notif-badge" style="position:absolute;top:-5px;right:-5px;background:var(--color-error);color:white;font-size:0.6rem;padding:2px 5px;border-radius:10px;display:none;">0</span>
+            <div class="nav-actions">
+                <div class="notifications-wrapper">
+                    <button id="nav-notif-btn" class="nav-notif-btn" aria-label="Notifications">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        <span id="nav-notif-badge" class="nav-notif-badge">0</span>
                     </button>
-                    <div id="nav-notif-dropdown" style="display:none;position:absolute;top:100%;right:-60px;width:300px;background:rgba(13, 11, 18, 0.95);border:1px solid rgba(229, 216, 184, 0.2);border-radius:10px;padding:10px;z-index:9000;box-shadow:0 10px 30px rgba(0,0,0,0.5)">
-                        <div style="font-size:1rem;font-weight:bold;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,0.1)">Notifications</div>
-                        <div id="nav-notif-list" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
+                    <div id="nav-notif-dropdown" class="nav-notif-dropdown">
+                        <div class="nav-notif-dropdown-header">
+                            <span>Notifications</span>
+                        </div>
+                        <div id="nav-notif-list" class="nav-notif-list"></div>
                     </div>
                 </div>
                 <button class="cta-btn join-btn" onclick="window.location.href='login.html'" id="nav-join-btn">Sign In</button>
-                <button class="mobile-menu-btn" id="mobile-menu-btn">
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle navigation menu">
                     <span></span><span></span><span></span>
                 </button>
             </div>
@@ -108,26 +110,26 @@
         <div class="teams-container">
 
             <!-- Tab Bar -->
-            <div class="teams-tab-bar">
-                <button class="teams-tab active" data-tab="browse" id="tab-browse">
+            <div class="teams-tab-bar" role="tablist" aria-label="Teams Navigation">
+                <button class="teams-tab active" data-tab="browse" id="tab-browse" role="tab" aria-selected="true" aria-controls="tab-content-browse">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
                     Browse Teams
                     <span class="tab-badge" id="tab-browse-badge">0</span>
                 </button>
-                <button class="teams-tab" data-tab="myteams" id="tab-myteams">
+                <button class="teams-tab" data-tab="myteams" id="tab-myteams" role="tab" aria-selected="false" aria-controls="tab-content-myteams">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                     My Teams
                     <span class="tab-badge" id="tab-myteams-badge">0</span>
                 </button>
-                <button class="teams-tab" data-tab="find" id="tab-find">
+                <button class="teams-tab" data-tab="find" id="tab-find" role="tab" aria-selected="false" aria-controls="tab-content-find">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
                     Find Teammates
                 </button>
-                <button class="teams-tab" data-tab="leaderboard" id="tab-leaderboard">
+                <button class="teams-tab" data-tab="leaderboard" id="tab-leaderboard" role="tab" aria-selected="false" aria-controls="tab-content-leaderboard">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z"/></svg>
                     Leaderboard
                 </button>
-                <button class="teams-tab" data-tab="invites" id="tab-invites">
+                <button class="teams-tab" data-tab="invites" id="tab-invites" role="tab" aria-selected="false" aria-controls="tab-content-invites">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                     Invites
                     <span class="tab-badge tab-badge-alert" id="tab-invites-badge" style="display:none">0</span>
@@ -135,41 +137,61 @@
             </div>
 
             <!-- ===== TAB: BROWSE TEAMS ===== -->
-            <div class="tab-content active" id="tab-content-browse">
-                <div class="browse-controls">
-                    <div class="search-bar-wrap">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        <input type="text" id="browse-search" placeholder="Search teams by name, game, or region…">
+            <div class="tab-content active" id="tab-content-browse" role="tabpanel" aria-labelledby="tab-browse">
+                <div class="browse-controls-wrapper">
+                    <div class="browse-controls">
+                        <div class="search-bar-wrap">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                            <input type="text" id="browse-search" placeholder="Search teams by name, game, region, or role…">
+                            <button type="button" class="search-clear-btn" id="browse-search-clear" aria-label="Clear search" style="display:none">✕</button>
+                        </div>
+                        <div class="browse-filters">
+                            <select id="filter-game" class="filter-select" aria-label="Filter by Game">
+                                <option value="">All Games</option>
+                                <option value="Valorant">Valorant</option>
+                                <option value="BGMI">BGMI</option>
+                                <option value="Free Fire">Free Fire</option>
+                                <option value="COD Mobile">COD Mobile</option>
+                                <option value="CS2">CS2</option>
+                            </select>
+                            <select id="filter-region" class="filter-select" aria-label="Filter by Region">
+                                <option value="">All Regions</option>
+                                <option value="Asia">Asia</option>
+                                <option value="India">India</option>
+                                <option value="SEA">SEA</option>
+                                <option value="EU">EU</option>
+                                <option value="NA">NA</option>
+                            </select>
+                            <select id="filter-rank" class="filter-select" aria-label="Filter by Rank">
+                                <option value="">All Ranks</option>
+                                <option value="Any">Any Rank</option>
+                                <option value="Bronze+">Bronze+</option>
+                                <option value="Gold+">Gold+</option>
+                                <option value="Diamond+">Diamond+</option>
+                                <option value="Conqueror">Conqueror</option>
+                            </select>
+                            <select id="filter-status" class="filter-select" aria-label="Filter by Recruitment Status">
+                                <option value="">All Statuses</option>
+                                <option value="recruiting">Recruiting Only</option>
+                                <option value="full">Roster Full</option>
+                            </select>
+                            <select id="filter-visibility" class="filter-select" aria-label="Filter by Team Visibility">
+                                <option value="">All Visibility</option>
+                                <option value="public">Public</option>
+                                <option value="private">Private</option>
+                            </select>
+                            <button type="button" class="filter-reset-btn" id="browse-reset-filters" title="Reset all filters">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                <span>Reset</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="browse-filters">
-                        <select id="filter-game" class="filter-select">
-                            <option value="">All Games</option>
-                            <option value="Valorant">Valorant</option>
-                            <option value="BGMI">BGMI</option>
-                            <option value="Free Fire">Free Fire</option>
-                            <option value="COD Mobile">COD Mobile</option>
-                            <option value="CS2">CS2</option>
-                        </select>
-                        <select id="filter-region" class="filter-select">
-                            <option value="">All Regions</option>
-                            <option value="Asia">Asia</option>
-                            <option value="India">India</option>
-                            <option value="SEA">SEA</option>
-                            <option value="EU">EU</option>
-                            <option value="NA">NA</option>
-                        </select>
-                        <select id="filter-rank" class="filter-select">
-                            <option value="">All Ranks</option>
-                            <option value="Any">Any Rank</option>
-                            <option value="Bronze+">Bronze+</option>
-                            <option value="Gold+">Gold+</option>
-                            <option value="Diamond+">Diamond+</option>
-                            <option value="Conqueror">Conqueror</option>
-                        </select>
-                        <button class="filter-btn" id="filter-open-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
-                            Filters
-                        </button>
+
+                    <!-- Active Filters Summary & Badges -->
+                    <div class="browse-active-bar" id="browse-active-bar">
+                        <span class="browse-count-label" id="browse-count-label">— squads found</span>
+                        <div class="browse-active-chips" id="browse-active-chips"></div>
+                        <button type="button" class="browse-clear-all-link" id="browse-clear-all-link" style="display:none">Clear all filters</button>
                     </div>
                 </div>
 
@@ -206,7 +228,7 @@
             </div>
 
             <!-- ===== TAB: MY TEAMS ===== -->
-            <div class="tab-content" id="tab-content-myteams">
+            <div class="tab-content" id="tab-content-myteams" role="tabpanel" aria-labelledby="tab-myteams">
                 <div class="myteams-header">
                     <div>
                         <h2 class="section-heading">Your Squads</h2>
@@ -224,7 +246,7 @@
                     <div class="empty-icon">⚔️</div>
                     <h3>No Squads Yet</h3>
                     <p>Create a team or join one to get started!</p>
-                    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                    <div class="empty-actions">
                         <button class="cta-btn primary-btn" id="myteams-empty-create">Create Team</button>
                         <button class="cta-btn secondary-btn" id="myteams-empty-browse">Browse Teams</button>
                     </div>
@@ -232,20 +254,20 @@
             </div>
 
             <!-- ===== TAB: LEADERBOARD ===== -->
-            <div class="tab-content" id="tab-content-leaderboard">
+            <div class="tab-content" id="tab-content-leaderboard" role="tabpanel" aria-labelledby="tab-leaderboard">
                 <div class="myteams-header">
                     <div>
                         <h2 class="section-heading">Weekly Leaderboard</h2>
                         <p class="section-sub">Top squads this week ranked by XP</p>
                     </div>
                 </div>
-                <div class="leaderboard-list" id="leaderboard-list" style="display:flex;flex-direction:column;gap:12px;max-width:800px;margin:0 auto;">
+                <div class="leaderboard-list" id="leaderboard-list">
                     <!-- injected by JS -->
                 </div>
             </div>
 
             <!-- ===== TAB: FIND TEAMMATES ===== -->
-            <div class="tab-content" id="tab-content-find">
+            <div class="tab-content" id="tab-content-find" role="tabpanel" aria-labelledby="tab-find">
                 <div class="find-layout">
                     <!-- Left: My Profile & Match Controls Sidebar -->
                     <aside class="find-sidebar">
@@ -357,7 +379,7 @@
             </div>
 
             <!-- ===== TAB: INVITES ===== -->
-            <div class="tab-content" id="tab-content-invites">
+            <div class="tab-content" id="tab-content-invites" role="tabpanel" aria-labelledby="tab-invites">
                 <div class="invites-layout">
 
                     <div class="invites-section">
@@ -430,19 +452,19 @@
                         <div class="tp-privacy-rank">
                             <span class="rank-badge" id="tp-rank-badge">—</span>
                             <span class="privacy-badge" id="tp-privacy-badge">PUBLIC</span>
-                            <span class="level-badge" id="tp-level-badge" style="background:rgba(229, 216, 184, 0.2);color:var(--color-primary);padding:4px 8px;border-radius:4px;font-size:0.8rem;font-weight:bold;">LVL 1</span>
+                            <span class="level-badge" id="tp-level-badge">LVL 1</span>
                         </div>
-                        <div class="tp-xp-bar" style="margin-top:10px;width:100%;max-width:200px">
-                            <div style="font-size:0.75rem;color:var(--color-primary);display:flex;justify-content:space-between;margin-bottom:4px">
+                        <div class="tp-xp-bar">
+                            <div class="tp-xp-header">
                                 <span>XP progress</span>
                                 <span id="tp-xp-text">0 / 100</span>
                             </div>
-                            <div style="width:100%;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden">
-                                <div id="tp-xp-fill" style="height:100%;background:var(--color-primary);width:0%"></div>
+                            <div class="tp-xp-track">
+                                <div id="tp-xp-fill" class="tp-xp-fill"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="tp-leader-actions" id="tp-leader-actions" style="display:none">
+                    <div class="tp-leader-actions" id="tp-leader-actions">
                         <button class="cta-btn secondary-btn tp-manage-btn" id="tp-manage-btn">⚙️ Manage Team</button>
                     </div>
                 </div>
@@ -477,7 +499,7 @@
                 <button class="tp-tab" data-tptab="activity">Activity</button>
                 <button class="tp-tab" data-tptab="achievements">Achievements</button>
                 <button class="tp-tab" data-tptab="history">Match History</button>
-                <button class="tp-tab" data-tptab="manage" id="tp-manage-tab" style="display:none">Manage</button>
+                <button class="tp-tab" data-tptab="manage" id="tp-manage-tab">Manage</button>
             </div>
 
             <!-- Roster Tab -->
@@ -493,7 +515,7 @@
 
             <!-- Activity Tab -->
             <div class="tp-tab-content" id="tptab-activity">
-                <div class="activity-feed-list" id="tp-activity-feed" style="display:flex;flex-direction:column;gap:10px;"></div>
+                <div class="activity-feed-list" id="tp-activity-feed"></div>
                 <div class="empty-state hidden" id="tp-activity-empty">
                     <div class="empty-icon">📡</div>
                     <h3>Silence</h3>
@@ -534,9 +556,9 @@
                 <div class="manage-section">
                     <h4 class="tp-section-title">Team Settings</h4>
                     <div class="manage-actions">
-                        <button class="cta-btn secondary-btn manage-action-btn" id="tp-manual-match-btn" style="border-color:var(--color-secondary);color:var(--color-secondary)">➕ Log Match (+15 XP)</button>
-                        <button class="cta-btn secondary-btn manage-action-btn" id="tp-manual-win-btn" style="border-color:var(--color-secondary);color:var(--color-secondary)"><svg class="action-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10M5 4h14v4a7 7 0 0 1-14 0V4z"></path></svg> Log Win (+30 XP)</button>
-                        <div style="width:100%;height:1px;background:rgba(229, 216, 184, 0.2);margin:10px 0"></div>
+                        <button class="cta-btn secondary-btn manage-action-btn manage-xp-btn" id="tp-manual-match-btn">➕ Log Match (+15 XP)</button>
+                        <button class="cta-btn secondary-btn manage-action-btn manage-xp-btn" id="tp-manual-win-btn"><svg class="action-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10M5 4h14v4a7 7 0 0 1-14 0V4z"></path></svg> Log Win (+30 XP)</button>
+                        <div class="manage-divider"></div>
                         <button class="cta-btn secondary-btn manage-action-btn" id="tp-sim-match-btn">⚔️ Simulate Match Win</button>
                         <button class="cta-btn secondary-btn manage-action-btn" id="tp-sim-tournament-btn"><svg class="action-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10M5 4h14v4a7 7 0 0 1-14 0V4z"></path></svg> Simulate Tournament</button>
                     </div>
@@ -639,7 +661,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="cta-btn primary-btn full-width" style="margin-top:10px">⚔️ Forge Team</button>
+                <button type="submit" class="cta-btn primary-btn full-width modal-submit-btn">⚔️ Forge Team</button>
             </form>
         </div>
     </div>
@@ -758,7 +780,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="cta-btn primary-btn full-width" style="margin-top:10px">💾 Save Profile</button>
+                <button type="submit" class="cta-btn primary-btn full-width modal-submit-btn">💾 Save Profile</button>
             </form>
         </div>
     </div>

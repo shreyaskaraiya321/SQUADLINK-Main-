@@ -77,11 +77,11 @@ function renderNotifications() {
   const list = document.getElementById('nav-notif-list');
   if (list) {
     list.innerHTML = notifs.map(n => `
-      <div style="padding:8px;background:${n.read?'transparent':'rgba(229, 216, 184, 0.1)'};border-radius:4px;font-size:0.8rem;border-left:2px solid ${n.read?'transparent':'var(--color-primary)'}">
-        <div>${n.message}</div>
-        <div style="font-size:0.6rem;color:#aaa;margin-top:2px">${new Date(n.timestamp).toLocaleTimeString()}</div>
+      <div class="nav-notif-item ${n.read ? 'read' : 'unread'}">
+        <div class="nav-notif-msg">${n.message}</div>
+        <div class="nav-notif-time">${new Date(n.timestamp).toLocaleTimeString()}</div>
       </div>
-    `).join('') || '<div style="color:#aaa;font-size:0.8rem;text-align:center">No notifications</div>';
+    `).join('') || '<div class="nav-notif-empty">No notifications</div>';
   }
 }
 
@@ -228,9 +228,13 @@ function animCounter(el, target) {
 function initTabs() {
   document.querySelectorAll('.teams-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.teams-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.teams-tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
       document.getElementById('tab-content-' + tab.dataset.tab)?.classList.add('active');
       if (tab.dataset.tab === 'find') renderPlayers();
       if (tab.dataset.tab === 'invites') renderInvites();
@@ -245,19 +249,19 @@ function renderLeaderboard() {
   if (!container) return;
   const sorted = [...STORE.teams].sort((a, b) => (b.weeklyXp || 0) - (a.weeklyXp || 0)).slice(0, 50);
   container.innerHTML = sorted.map((t, idx) => `
-    <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;display:flex;align-items:center;gap:15px;border-left:4px solid ${idx===0?'var(--color-secondary)':idx===1?'#C0C0C0':idx===2?'#CD7F32':'var(--color-primary)'};">
-      <div style="font-size:1.5rem;font-weight:bold;width:30px;color:${idx===0?'var(--color-secondary)':idx===1?'#C0C0C0':idx===2?'#CD7F32':'var(--text-muted)'}">${idx+1}</div>
-      <div style="font-size:2rem;line-height:1">${t.logo || '🎮'}</div>
-      <div style="flex-grow:1">
-        <div style="font-size:1.1rem;font-weight:bold;color:var(--text-primary)">${t.name}</div>
-        <div style="font-size:0.8rem;color:var(--text-muted)">${t.game} · Lvl ${t.level||1}</div>
+    <div class="leaderboard-card ${idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : ''}">
+      <div class="lb-rank">${idx + 1}</div>
+      <div class="lb-logo">${t.logo || '🎮'}</div>
+      <div class="lb-info">
+        <div class="lb-name">${t.name}</div>
+        <div class="lb-meta">${t.game} · Lvl ${t.level || 1}</div>
       </div>
-      <div style="text-align:right">
-        <div style="font-size:1.2rem;font-weight:bold;color:var(--color-primary)">${t.weeklyXp || 0}</div>
-        <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;">Weekly XP</div>
+      <div class="lb-xp-block">
+        <div class="lb-xp-val">${(t.weeklyXp || 0).toLocaleString()}</div>
+        <div class="lb-xp-lbl">Weekly XP</div>
       </div>
     </div>
-  `).join('') || '<div style="color:#aaa;text-align:center;">No squads yet.</div>';
+  `).join('') || '<div class="leaderboard-empty">No squads yet.</div>';
 }
 
 function getInitials(name) {
@@ -273,25 +277,76 @@ function getInitials(name) {
 function renderTeams(filter = {}) {
   const grid = document.getElementById('teams-grid');
   const empty = document.getElementById('browse-empty');
+  if (!grid) return;
+
   let teams = STORE.teams;
-  if (filter.search) teams = teams.filter(t => (t.name+t.game+t.region).toLowerCase().includes(filter.search.toLowerCase()));
-  if (filter.game) teams = teams.filter(t => t.game === filter.game);
-  if (filter.region) teams = teams.filter(t => t.region === filter.region);
-  if (filter.rank) teams = teams.filter(t => t.rankRequirement === filter.rank);
-  document.getElementById('tab-browse-badge').textContent = STORE.teams.length;
+
+  // Search filter
+  if (filter.search) {
+    const q = filter.search.toLowerCase();
+    teams = teams.filter(t => 
+      (t.name + ' ' + t.game + ' ' + t.region + ' ' + (t.requiredRoles || []).join(' ')).toLowerCase().includes(q)
+    );
+  }
+
+  // Game filter
+  if (filter.game) {
+    teams = teams.filter(t => t.game === filter.game);
+  }
+
+  // Region filter
+  if (filter.region) {
+    teams = teams.filter(t => t.region === filter.region);
+  }
+
+  // Rank filter
+  if (filter.rank) {
+    teams = teams.filter(t => t.rankRequirement === filter.rank);
+  }
+
+  // Recruitment status filter
+  if (filter.status === 'recruiting') {
+    teams = teams.filter(t => t.requiredRoles && t.requiredRoles.length > 0);
+  } else if (filter.status === 'full') {
+    teams = teams.filter(t => !t.requiredRoles || t.requiredRoles.length === 0);
+  }
+
+  // Visibility filter
+  if (filter.visibility) {
+    teams = teams.filter(t => (t.privacy || 'public') === filter.visibility);
+  }
+
+  // Update badge count
+  const badge = document.getElementById('tab-browse-badge');
+  if (badge) badge.textContent = STORE.teams.length;
+
+  // Update match count label
+  const countLabel = document.getElementById('browse-count-label');
+  if (countLabel) {
+    countLabel.textContent = `${teams.length} squad${teams.length !== 1 ? 's' : ''} found`;
+  }
+
   grid.innerHTML = '';
-  if (!teams.length) { empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
+  if (!teams.length) {
+    empty?.classList.remove('hidden');
+    return;
+  }
+  empty?.classList.add('hidden');
+
   teams.forEach(team => {
-    const wr = team.stats.matchesPlayed ? Math.round((team.stats.wins / team.stats.matchesPlayed) * 100) : 0;
-    const isRecruiting = team.requiredRoles && team.requiredRoles.length > 0;
+    const wr = team.stats && team.stats.matchesPlayed ? Math.round((team.stats.wins / team.stats.matchesPlayed) * 100) : 0;
+    const isRecruiting = Boolean(team.requiredRoles && team.requiredRoles.length > 0);
     const card = document.createElement('div');
     card.className = 'team-card';
     
-    // Clean initials avatar or uploaded logo
-    const logoHtml = team.logoData 
+    // Clean initials avatar or uploaded logo (never random emojis)
+    const logoHtml = (team.logoData && (team.logoData.startsWith('data:') || team.logoData.startsWith('http')))
       ? `<img src="${team.logoData}" alt="${team.name}">`
       : `<span class="team-initials">${getInitials(team.name)}</span>`;
+
+    const isPrivate = team.privacy === 'private';
+    const memberCount = team.members ? team.members.length : 1;
+    const joinBtnText = isPrivate ? 'Request to Join' : 'Join Team';
 
     card.innerHTML = `
       <div class="team-card-body">
@@ -302,38 +357,39 @@ function renderTeams(filter = {}) {
             <div class="team-card-sub">
               <span class="team-card-game">${team.game}</span>
               <span class="team-card-bullet">•</span>
-              <span class="team-card-members">${team.members.length} player${team.members.length !== 1 ? 's' : ''}</span>
+              <span class="team-card-members">${memberCount} player${memberCount !== 1 ? 's' : ''}</span>
             </div>
+          </div>
+          <div class="team-card-badge-wrap">
+            <span class="recruitment-badge ${isRecruiting ? 'recruiting' : 'full'}">
+              ${isRecruiting ? 'Recruiting' : 'Roster Full'}
+            </span>
           </div>
         </div>
 
         <div class="team-card-meta">
-          <div class="team-meta-item">
-            <span class="meta-label">Region</span>
-            <span class="meta-val">${team.region}</span>
+          <div class="team-meta-pill" title="Region: ${team.region}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+            <span>${team.region}</span>
           </div>
-          <div class="team-meta-item">
-            <span class="meta-label">Rank</span>
-            <span class="meta-val">${team.rankRequirement}</span>
+          <div class="team-meta-pill rank-pill" title="Required Rank: ${team.rankRequirement || 'Any Rank'}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>${team.rankRequirement || 'Any Rank'}</span>
           </div>
-          <div class="team-meta-item">
-            <span class="meta-label">Access</span>
-            <span class="meta-val">${team.privacy === 'public' ? 'Public' : 'Private'}</span>
-          </div>
-          <div class="team-meta-item ${isRecruiting ? 'recruiting-active' : ''}">
-            <span class="meta-label">Status</span>
-            <span class="meta-val">${isRecruiting ? 'Recruiting' : 'Roster Full'}</span>
+          <div class="team-meta-pill access-pill ${isPrivate ? 'private' : 'public'}" title="Visibility: ${isPrivate ? 'Private' : 'Public'}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="${isPrivate ? 'M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z' : 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'}"/></svg>
+            <span>${isPrivate ? 'Private' : 'Public'}</span>
           </div>
         </div>
 
         <div class="team-card-stats">
           <div class="tc-stat">
-            <span class="tc-stat-val">${team.stats.matchesPlayed}</span>
+            <span class="tc-stat-val">${team.stats ? team.stats.matchesPlayed : 0}</span>
             <span class="tc-stat-label">Matches</span>
           </div>
           <div class="tc-stat-divider"></div>
           <div class="tc-stat">
-            <span class="tc-stat-val">${team.stats.wins}</span>
+            <span class="tc-stat-val">${team.stats ? team.stats.wins : 0}</span>
             <span class="tc-stat-label">Wins</span>
           </div>
           <div class="tc-stat-divider"></div>
@@ -353,10 +409,11 @@ function renderTeams(filter = {}) {
         </div>
 
         <div class="team-card-footer">
-          <button type="button" class="cta-btn secondary-btn view-team-btn" data-id="${team.id}">View</button>
-          <button type="button" class="cta-btn primary-btn join-team-btn" data-id="${team.id}">Join Team</button>
+          <button type="button" class="cta-btn secondary-btn view-team-btn" data-id="${team.id}">View Details</button>
+          <button type="button" class="cta-btn primary-btn join-team-btn" data-id="${team.id}">${joinBtnText}</button>
         </div>
       </div>`;
+
     card.querySelector('.view-team-btn').addEventListener('click', (e) => {
       e.stopPropagation();
       openTeamProfile(team.id);
@@ -1129,18 +1186,124 @@ function initModals() {
 }
 
 // ========== SEARCH & FILTERS ==========
+function getCurrentBrowseFilters() {
+  return {
+    search: document.getElementById('browse-search')?.value.trim() || '',
+    game: document.getElementById('filter-game')?.value || '',
+    region: document.getElementById('filter-region')?.value || '',
+    rank: document.getElementById('filter-rank')?.value || '',
+    status: document.getElementById('filter-status')?.value || '',
+    visibility: document.getElementById('filter-visibility')?.value || ''
+  };
+}
+
+function updateActiveFilterBadges(filters) {
+  const container = document.getElementById('browse-active-chips');
+  const clearAllLink = document.getElementById('browse-clear-all-link');
+  if (!container) return;
+
+  const labels = {
+    search: 'Keyword',
+    game: 'Game',
+    region: 'Region',
+    rank: 'Rank',
+    status: 'Status',
+    visibility: 'Access'
+  };
+
+  const chips = [];
+  Object.entries(filters).forEach(([key, val]) => {
+    if (val) {
+      let displayVal = val;
+      if (key === 'status') displayVal = val === 'recruiting' ? 'Recruiting' : 'Roster Full';
+      if (key === 'visibility') displayVal = val === 'public' ? 'Public' : 'Private';
+      chips.push({ key, label: labels[key] || key, val: displayVal });
+    }
+  });
+
+  if (clearAllLink) {
+    clearAllLink.style.display = chips.length > 0 ? 'inline-block' : 'none';
+  }
+
+  if (chips.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = chips.map(c => `
+    <span class="active-filter-chip" data-key="${c.key}">
+      <span class="active-filter-chip-label">${c.label}:</span> ${escapeHTML(c.val)}
+      <button type="button" class="active-filter-remove" data-key="${c.key}" aria-label="Remove ${c.label} filter">&times;</button>
+    </span>
+  `).join('');
+
+  container.querySelectorAll('.active-filter-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const key = btn.dataset.key;
+      if (key === 'search') {
+        const input = document.getElementById('browse-search');
+        if (input) input.value = '';
+      } else {
+        const select = document.getElementById(`filter-${key}`);
+        if (select) select.value = '';
+      }
+      triggerCurrentFilters();
+    });
+  });
+}
+
+function triggerCurrentFilters() {
+  const filters = getCurrentBrowseFilters();
+  const searchClear = document.getElementById('browse-search-clear');
+  if (searchClear) {
+    searchClear.style.display = filters.search ? 'inline-flex' : 'none';
+  }
+  updateActiveFilterBadges(filters);
+  renderTeams(filters);
+}
+
+function resetBrowseFilters() {
+  const sInput = document.getElementById('browse-search');
+  if (sInput) sInput.value = '';
+  ['filter-game', 'filter-region', 'filter-rank', 'filter-status', 'filter-visibility'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  triggerCurrentFilters();
+}
+
 function initFilters() {
   let debounce;
-  const applyFilters = () => {
-    renderTeams({
-      search: document.getElementById('browse-search').value,
-      game: document.getElementById('filter-game').value,
-      region: document.getElementById('filter-region').value,
-      rank: document.getElementById('filter-rank').value,
+  const searchInput = document.getElementById('browse-search');
+  const searchClear = document.getElementById('browse-search-clear');
+  const resetBtn = document.getElementById('browse-reset-filters');
+  const clearAllLink = document.getElementById('browse-clear-all-link');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(triggerCurrentFilters, 250);
     });
-  };
-  document.getElementById('browse-search').addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(applyFilters, 250); });
-  ['filter-game','filter-region','filter-rank'].forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
+  }
+
+  if (searchClear) {
+    searchClear.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      triggerCurrentFilters();
+      if (searchInput) searchInput.focus();
+    });
+  }
+
+  ['filter-game', 'filter-region', 'filter-rank', 'filter-status', 'filter-visibility'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', triggerCurrentFilters);
+  });
+
+  if (resetBtn) resetBtn.addEventListener('click', resetBrowseFilters);
+  if (clearAllLink) clearAllLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    resetBrowseFilters();
+  });
 }
 
 // ========== MOBILE NAV ==========
@@ -1161,7 +1324,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPlayerProfile();
   initFilters();
   initAutoFill();
-  renderTeams();
+  triggerCurrentFilters();
   renderMyTeams();
   renderPlayers();
   updateInviteBadge();
